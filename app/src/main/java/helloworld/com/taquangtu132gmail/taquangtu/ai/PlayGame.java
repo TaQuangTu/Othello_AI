@@ -1,6 +1,5 @@
 package helloworld.com.taquangtu132gmail.taquangtu.ai;
 
-import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -32,12 +31,12 @@ public class PlayGame
         this.chessColorMaxtrix=new ArrayList<>(row);
         for(int i=0;i<row;i++)
         {
-            this.chessColorMaxtrix.add(i,new ArrayList<String>(column));
+            this.chessColorMaxtrix.add(new ArrayList<String>(column));
         }
         for(int i=0;i<row;i++)
         {
             for(int j=0;j<column;j++)
-                chessColorMaxtrix.get(i).set(j,chessColorArray.get(i*column+j));
+                chessColorMaxtrix.get(i).add(chessColorArray.get(i*column+j));
         }
         setOnHumanClick();
     }
@@ -58,8 +57,8 @@ public class PlayGame
                 {
                     if(chessColorMaxtrix.get(x+dx[i]).get(y+dy[i]).equals("W"))
                     {
-                       int tempX=x+dx[i];
-                       int tempY=y+dy[i];
+                        int tempX=x+dx[i];
+                        int tempY=y+dy[i];
                         while(tempX+dx[i]>=0&&tempX+dx[i]<row&&tempY+dy[i]>=0&&tempY+dy[i]<column)
                         {
                             if(chessColorMaxtrix.get(tempX+dx[i]).get(tempY+dy[i]).equals("E")) break;
@@ -92,7 +91,7 @@ public class PlayGame
                     }
                 }
             }
-            return true;
+            return false;
         }
     }
     void setOnHumanClick()
@@ -105,18 +104,29 @@ public class PlayGame
                     Toast.makeText(mainActivity,"CPU is calculating", Toast.LENGTH_SHORT).show();
                 }
                 else //check for legal position
+                {
+                    //if legal, set Black for this cell
+                    if(isLegal(humanTurn, i))
                     {
-                        //if legal, set Black for this cell
-                        if(isLegal(humanTurn, i))
+                        chessColorArray.set(i,"B");
+                        chessColorMaxtrix.get(i/column).set(i%column,"B");
+                        chessAdapter.notifyDataSetChanged();
+                        Random random = new Random();
+                        int position = random.nextInt(row*column);
+                        humanTurn=false;
+                        while(!isLegal(humanTurn,position))
                         {
-                            chessColorArray.set(i,"B");
-                            chessColorMaxtrix.get(i/column).set(i%column,"B");
-                            chessAdapter.notifyDataSetChanged();
+                            position=random.nextInt(row*column);
                         }
-                        //else make test
-                        else
-                        Toast.makeText(mainActivity, "Can't put here",Toast.LENGTH_SHORT).show();
+                        chessColorArray.set(position,"W");
+                        chessColorMaxtrix.get(position/column).set(position%column,"W");
+                        chessAdapter.notifyDataSetChanged();
+                        humanTurn=true;
                     }
+                    //else make test
+                    else
+                        Toast.makeText(mainActivity, "Can't put here",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -168,8 +178,7 @@ public class PlayGame
     }
     public void play()
     {
-        humanTurn=true;  //first turn is of human
-        while (isFinish()==2) //not over
+        /*if(isFinish()==2) //not over
         {
             if(humanTurn)
             {
@@ -192,21 +201,22 @@ public class PlayGame
                         humanTurn=false;
                     }
                 };
+                countDownTimer.start();
             }
             else
+            {
+                //calculate the best move for computer
+                Random random = new Random();
+                int position = random.nextInt(row*column);
+                while(!isLegal(humanTurn,position))
                 {
-                    //calculate the best move for computer
-                    Random random = new Random();
-                    int position = random.nextInt(row*column);
-                    while(!isLegal(humanTurn,position))
-                    {
-                        position=random.nextInt(row*column);
-                        chessColorArray.set(position,"W");
-                        chessColorMaxtrix.get(position/column).set(position%column,"W");
-                        chessAdapter.notifyDataSetChanged();
-                    }
-                    humanTurn=true;
+                    position=random.nextInt(row*column);
+                    chessColorArray.set(position,"W");
+                    chessColorMaxtrix.get(position/column).set(position%column,"W");
+                    chessAdapter.notifyDataSetChanged();
                 }
-        }
+                humanTurn=true;
+            }
+        }*/
     }
 }
