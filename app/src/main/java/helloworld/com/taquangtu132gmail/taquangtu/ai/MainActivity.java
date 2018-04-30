@@ -1,8 +1,12 @@
 package helloworld.com.taquangtu132gmail.taquangtu.ai;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -11,11 +15,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private int row=15,column=15; //row and column of the board
+    private int row=8,column=8; //row and column of the board
     private GridView gvBoard;
     private ArrayList<String> chessColorArray;
     private ImageButton imbUndo, imbReUndo, imbNewgame;
     private ProgressBar pbTime;
+    private Button btResetBoard;
     private ChessAdapter chessAdapter;
     public int getRow() {
         return row;
@@ -56,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         setBoardSize();
         //declare adapter, arrayList, setAdapter
         initAdapter();
+        setOnClickForView();
         Toast.makeText(this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
     }
     void initAdapter() //and ArrayList, setAdapter
@@ -91,6 +97,51 @@ public class MainActivity extends AppCompatActivity {
         imbUndo     = (ImageButton) findViewById(R.id.imbUndo);
         imbReUndo   = (ImageButton) findViewById(R.id.imbReUndo);
         imbNewgame  = (ImageButton) findViewById(R.id.imbNewGame);
+        btResetBoard= (Button) findViewById(R.id.btResetBoard);
+    }
+    public void setOnClickForView()
+    {
+        imbNewgame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //set board size
+                setBoardSize();
+                //declare adapter, arrayList, setAdapter
+                initAdapter();
+                Toast.makeText(MainActivity.this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
+            }
+        });
+        btResetBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setTitle("NEW BOARD");
+                dialog.setContentView(R.layout.activity_dialog);
+                dialog.show();
+                Button btOK = dialog.findViewById(R.id.btOK);
+                btOK.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(((EditText)dialog.findViewById(R.id.etNewRow)).getText().toString().trim().equals(""))
+                        {
+                            Toast.makeText(MainActivity.this,"Must be a number, try again!!!", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        if(((EditText)dialog.findViewById(R.id.etNewColumn)).getText().toString().trim().equals(""))
+                            {
+                                Toast.makeText(MainActivity.this,"Must be a number, try again!!!", Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                                {
+                                    int newRow =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewRow)).getText().toString().trim());
+                                    int newCol =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewColumn)).getText().toString().trim());
+                                    resetBoard(newRow, newCol);
+                                    dialog.dismiss();
+                                }
+                    }
+                });
+            }
+        });
     }
     void setBoardSize()  //and column
     {
@@ -109,4 +160,13 @@ public class MainActivity extends AppCompatActivity {
         return this.pbTime;
     }
     public ChessAdapter getChessAdapter(){return this.chessAdapter;}
+    public void resetBoard(int row, int column)
+    {
+        this.row=row;
+        this.column=column;
+        setBoardSize();
+        initAdapter();
+        Toast.makeText(this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
+        PlayGame playGame = new PlayGame(this);
+    }
 }

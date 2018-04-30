@@ -111,6 +111,7 @@ public class PlayGame
                         chessColorArray.set(i,"B");
                         chessColorMaxtrix.get(i/column).set(i%column,"B");
                         chessAdapter.notifyDataSetChanged();
+                        //find best move
                         Random random = new Random();
                         int position = random.nextInt(row*column);
                         humanTurn=false;
@@ -118,6 +119,7 @@ public class PlayGame
                         {
                             position=random.nextInt(row*column);
                         }
+
                         chessColorArray.set(position,"W");
                         chessColorMaxtrix.get(position/column).set(position%column,"W");
                         chessAdapter.notifyDataSetChanged();
