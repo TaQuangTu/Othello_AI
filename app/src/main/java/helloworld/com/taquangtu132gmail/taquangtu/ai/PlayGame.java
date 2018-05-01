@@ -1,5 +1,7 @@
 package helloworld.com.taquangtu132gmail.taquangtu.ai;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -44,8 +46,10 @@ public class PlayGame
     {
         int x=position/column;
         int y=position%column;
+        /*int dy[]={-1,0,1,1,1,0,-1,-1};
+        int dx[]={1,1,1,0,-1,-1,-1,0};*/
         int dy[]={-1,0,1,1,1,0,-1,-1};
-        int dx[]={1,1,1,0,-1,-1,-1,0};
+        int dx[]={-1,-1,-1,0,1,1,1,0};
         //if that position is not empty return false
         if(chessColorArray.get(position).equals("E")==false) return false;
         //
@@ -106,31 +110,220 @@ public class PlayGame
                 else //check for legal position
                 {
                     //if legal, set Black for this cell
+                    if (!isMoveLefts(true))
+                    {
+                        humanTurn = false;
+                        Toast.makeText(mainActivity,"You have no way to move, CPU turn", Toast.LENGTH_SHORT);
+                    }
                     if(isLegal(humanTurn, i))
                     {
                         chessColorArray.set(i,"B");
                         chessColorMaxtrix.get(i/column).set(i%column,"B");
+                        put(humanTurn,i);
                         chessAdapter.notifyDataSetChanged();
-                        //find best move
-                        Random random = new Random();
-                        int position = random.nextInt(row*column);
                         humanTurn=false;
-                        while(!isLegal(humanTurn,position))
+                        //check for finish
+                        int res = isFinish();
+                        if(res==-1)
                         {
-                            position=random.nextInt(row*column);
+                            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                            alert.setTitle("Congratulation!!!");
+                            alert.setMessage("Winner winner chicken dinner");
+                            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mainActivity.resetBoard(row,column);
+                                }
+                            });
+                            alert.show();
+                        }
+                        if(res==0)
+                        {
+                            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                            alert.setTitle("Congratulation!!!");
+                            alert.setMessage("You and CPU draw");
+                            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mainActivity.resetBoard(row,column);
+                                }
+                            });
+                            alert.show();
+                        }
+                        if(res==1)
+                        {
+                            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                            alert.setTitle("condolatory!!!");
+                            alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
+                            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mainActivity.resetBoard(row,column);
+                                }
+                            });
+                            alert.show();
+                        }
+                        //
+                        //check for move lefts
+                        if (!isMoveLefts(humanTurn))
+                        {
+                            humanTurn = true;
+                            Toast.makeText(mainActivity,"CPU have no way to move, your turn", Toast.LENGTH_SHORT);
+                        }
+                        //
+                        //
+                        if(!humanTurn)
+                        {
+                            //find best move
+                            Random random = new Random();
+                            int position = random.nextInt(row*column);
+                            while(!isLegal(humanTurn,position))
+                            {
+                                position=random.nextInt(row*column);
+                            }
+
+                            chessColorArray.set(position,"W");
+                            chessColorMaxtrix.get(position/column).set(position%column,"W");
+                            put(humanTurn,position);
+                            chessAdapter.notifyDataSetChanged();
+                            humanTurn=true;
+                            res = isFinish();
+                            if(res==-1)
+                            {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                                alert.setTitle("Congratulation!!!");
+                                alert.setMessage("Winner winner chicken dinner");
+                                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        mainActivity.resetBoard(row,column);
+                                    }
+                                });
+                                alert.show();
+                            }
+                            if(res==0)
+                            {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                                alert.setTitle("Congratulation!!!");
+                                alert.setMessage("You and CPU draw");
+                                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        mainActivity.resetBoard(row,column);
+                                    }
+                                });
+                                alert.show();
+                            }
+                            if(res==1)
+                            {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                                alert.setTitle("condolatory!!!");
+                                alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
+                                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        mainActivity.resetBoard(row,column);
+                                    }
+                                });
+                                alert.show();
+                            }
+                        }
                         }
 
-                        chessColorArray.set(position,"W");
-                        chessColorMaxtrix.get(position/column).set(position%column,"W");
-                        chessAdapter.notifyDataSetChanged();
-                        humanTurn=true;
-                    }
                     //else make test
                     else
                         Toast.makeText(mainActivity, "Can't put here",Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+    void put(boolean humanTurn,int position)
+    {
+        int x=position/column;
+        int y=position%column;
+        int dy[]={-1,0,1,1,1,0,-1,-1};
+        int dx[]={-1,-1,-1,0,1,1,1,0};
+        if(humanTurn == true)
+        {
+            for(int i=0;i<8;i++)
+            {
+                if(x+dx[i]>=0&&x+dx[i]<row&&y+dy[i]>=0&&y+dy[i]<column)
+                {
+                    if(chessColorMaxtrix.get(x+dx[i]).get(y+dy[i]).equals("W"))
+                    {
+
+                        //check for legal
+                        boolean isAnInstance=false;
+                        int x1=x+dx[i], y1=y+dy[i];
+                        while(x1+dx[i]>=0&&x1+dx[i]<row&&y1+dy[i]>=0&&y1+dy[i]<column)
+                        {
+                            if(chessColorMaxtrix.get(x1+dx[i]).get(y1+dy[i]).equals("B"))
+                            {
+                                isAnInstance=true;
+                                break;
+                            }
+                            x1+=dx[i];
+                            y1+=dy[i];
+                        }
+                        if(!isAnInstance) continue;
+                        //
+                        chessColorMaxtrix.get(x+dx[i]).set(y+dy[i],"B");
+                        chessColorArray.set((x+dx[i])*column+(y+dy[i]),"B");
+                        int tempX=x+dx[i];
+                        int tempY=y+dy[i];
+                        while(tempX+dx[i]>=0&&tempX+dx[i]<row&&tempY+dy[i]>=0&&tempY+dy[i]<column)
+                        {
+                            if(chessColorMaxtrix.get(tempX+dx[i]).get(tempY+dy[i]).equals("B")) break;
+                            if(chessColorMaxtrix.get(tempX+dx[i]).get(tempY+dy[i]).equals("E")) break;
+                            chessColorMaxtrix.get(tempX+dx[i]).set(tempY+dy[i],"B");
+                            chessColorArray.set((tempX+dx[i])*column+(tempY+dy[i]),"B");
+                            tempX+=dx[i];
+                            tempY+=dy[i];
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for(int i=0;i<8;i++)
+            {
+                if(x+dx[i]>=0&&x+dx[i]<row&&y+dy[i]>=0&&y+dy[i]<column)
+                {
+                    if(chessColorMaxtrix.get(x+dx[i]).get(y+dy[i]).equals("B"))
+                    {
+                        //
+                        boolean isAnInstance=false;
+                        int x1=x+dx[i], y1=y+dy[i];
+                        while(x1+dx[i]>=0&&x1+dx[i]<row&&y1+dy[i]>=0&&y1+dy[i]<column)
+                        {
+                            if(chessColorMaxtrix.get(x1+dx[i]).get(y1+dy[i]).equals("W"))
+                            {
+                                isAnInstance=true;
+                                break;
+                            }
+                            x1+=dx[i];
+                            y1+=dy[i];
+                        }
+                        if(!isAnInstance) continue;
+                        //
+                        chessColorMaxtrix.get(x+dx[i]).set(y+dy[i],"W");
+                        chessColorArray.set((x+dx[i])*column+(y+dy[i]),"W");
+                        int tempX=x+dx[i];
+                        int tempY=y+dy[i];
+                        while(tempX+dx[i]>=0&&tempX+dx[i]<row&&tempY+dy[i]>=0&&tempY+dy[i]<column)
+                        {
+                            if(chessColorMaxtrix.get(tempX+dx[i]).get(tempY+dy[i]).equals("W")) break;
+                            if(chessColorMaxtrix.get(tempX+dx[i]).get(tempY+dy[i]).equals("E")) break;
+                            chessColorMaxtrix.get(tempX+dx[i]).set(tempY+dy[i],"W");
+                            chessColorArray.set((tempX+dx[i])*column+(tempY+dy[i]),"W");
+                            tempX+=dx[i];
+                            tempY+=dy[i];
+                        }
+                    }
+                }
+            }
+        }
     }
     int isFinish()
     {
@@ -178,47 +371,16 @@ public class PlayGame
     {
 
     }
-    public void play()
+    boolean isMoveLefts(boolean humanTurn)
     {
-        /*if(isFinish()==2) //not over
+        for(int i=0;i<row;i++)
         {
-            if(humanTurn)
-            {
-                //display a progress bar and wait for human calculating
-                pbTime.setMax(90000);
-                pbTime.setProgress(90000);
-                remainingTime = 90000;
-                final String time = "90000";
-                CountDownTimer countDownTimer =new CountDownTimer(90000,100) {
-                    @Override
-                    public void onTick(long l) {
-                        pbTime.setProgress(remainingTime-100);
-                        remainingTime-=100;
-                        //if human done while progress bar running then break immediately
-                        if(humanTurn==false) pbTime.setProgress(0);
-                        humanTurn=false; // assign computer for the next turn
-                    }
-                    @Override
-                    public void onFinish() {
-                        humanTurn=false;
-                    }
-                };
-                countDownTimer.start();
-            }
-            else
-            {
-                //calculate the best move for computer
-                Random random = new Random();
-                int position = random.nextInt(row*column);
-                while(!isLegal(humanTurn,position))
-                {
-                    position=random.nextInt(row*column);
-                    chessColorArray.set(position,"W");
-                    chessColorMaxtrix.get(position/column).set(position%column,"W");
-                    chessAdapter.notifyDataSetChanged();
-                }
-                humanTurn=true;
-            }
-        }*/
+            for(int j=0;j<column;j++)
+                if(isLegal(humanTurn,i*column+j)) return true;
+        }
+        return false;
     }
+    public void play() {
+    }
+
 }

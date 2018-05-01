@@ -135,8 +135,13 @@ public class MainActivity extends AppCompatActivity {
                                 {
                                     int newRow =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewRow)).getText().toString().trim());
                                     int newCol =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewColumn)).getText().toString().trim());
-                                    resetBoard(newRow, newCol);
-                                    dialog.dismiss();
+                                    if(newRow<=3||newCol<=3) Toast.makeText(MainActivity.this,"row and column must greater 3, try again!!!", Toast.LENGTH_SHORT).show();
+                                    else
+                                        {
+                                            resetBoard(newRow, newCol);
+                                            dialog.dismiss();
+                                        }
+
                                 }
                     }
                 });
