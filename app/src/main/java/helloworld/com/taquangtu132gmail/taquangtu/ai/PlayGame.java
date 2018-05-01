@@ -103,137 +103,66 @@ public class PlayGame
         gvBoard.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(humanTurn==false)  //not human turn
+                if (!isMoveLefts(true)||humanTurn==false)
                 {
-                    Toast.makeText(mainActivity,"CPU is calculating", Toast.LENGTH_SHORT).show();
-                }
-                else //check for legal position
-                {
-                    //if legal, set Black for this cell
-                    if (!isMoveLefts(true))
+                    humanTurn = false;
+                    Toast.makeText(mainActivity,"You have no way to move, CPU turn", Toast.LENGTH_SHORT);
+                    while (!isMoveLefts(true)) //till human have a way to move
                     {
+                        actionForFinish();
                         humanTurn = false;
                         Toast.makeText(mainActivity,"You have no way to move, CPU turn", Toast.LENGTH_SHORT);
-                    }
-                    if(isLegal(humanTurn, i))
-                    {
-                        chessColorArray.set(i,"B");
-                        chessColorMaxtrix.get(i/column).set(i%column,"B");
-                        put(humanTurn,i);
+                        //START: INSERT AI CODE HERE================================================
+                        Random random = new Random();
+                        int position = random.nextInt(row*column);
+                        while(!isLegal(false,position))
+                        {
+                            position=random.nextInt(row*column);
+                        }
+                        //END: INSERT AI CODE HERE==================================================
+                        chessColorArray.set(position,"W");
+                        chessColorMaxtrix.get(position/column).set(position%column,"W");
+                        put(humanTurn,position);
                         chessAdapter.notifyDataSetChanged();
-                        humanTurn=false;
-                        //check for finish
-                        int res = isFinish();
-                        if(res==-1)
-                        {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-                            alert.setTitle("Congratulation!!!");
-                            alert.setMessage("Winner winner chicken dinner");
-                            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    mainActivity.resetBoard(row,column);
-                                }
-                            });
-                            alert.show();
-                        }
-                        if(res==0)
-                        {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-                            alert.setTitle("Congratulation!!!");
-                            alert.setMessage("You and CPU draw");
-                            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    mainActivity.resetBoard(row,column);
-                                }
-                            });
-                            alert.show();
-                        }
-                        if(res==1)
-                        {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-                            alert.setTitle("condolatory!!!");
-                            alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
-                            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    mainActivity.resetBoard(row,column);
-                                }
-                            });
-                            alert.show();
-                        }
-                        //
-                        //check for move lefts
-                        if (!isMoveLefts(humanTurn))
-                        {
+                        humanTurn=true;
+                        actionForFinish();
+                    }
+                }
+                else
+                if(isLegal(true, i))
+                {
+                    chessColorArray.set(i,"B");
+                    chessColorMaxtrix.get(i/column).set(i%column,"B");
+                    put(true,i);
+                    chessAdapter.notifyDataSetChanged();
+                    humanTurn=false;
+                    //action for finish
+                    actionForFinish();
+                    if (!isMoveLefts(humanTurn))
+                    {
                             humanTurn = true;
                             Toast.makeText(mainActivity,"CPU have no way to move, your turn", Toast.LENGTH_SHORT);
-                        }
-                        //
-                        //
-                        if(!humanTurn)
-                        {
-                            //find best move
-                            Random random = new Random();
-                            int position = random.nextInt(row*column);
-                            while(!isLegal(humanTurn,position))
-                            {
-                                position=random.nextInt(row*column);
-                            }
-
-                            chessColorArray.set(position,"W");
-                            chessColorMaxtrix.get(position/column).set(position%column,"W");
-                            put(humanTurn,position);
-                            chessAdapter.notifyDataSetChanged();
-                            humanTurn=true;
-                            res = isFinish();
-                            if(res==-1)
-                            {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-                                alert.setTitle("Congratulation!!!");
-                                alert.setMessage("Winner winner chicken dinner");
-                                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        mainActivity.resetBoard(row,column);
-                                    }
-                                });
-                                alert.show();
-                            }
-                            if(res==0)
-                            {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-                                alert.setTitle("Congratulation!!!");
-                                alert.setMessage("You and CPU draw");
-                                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        mainActivity.resetBoard(row,column);
-                                    }
-                                });
-                                alert.show();
-                            }
-                            if(res==1)
-                            {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-                                alert.setTitle("condolatory!!!");
-                                alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
-                                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        mainActivity.resetBoard(row,column);
-                                    }
-                                });
-                                alert.show();
-                            }
-                        }
-                        }
-
-                    //else make test
+                    }
                     else
-                        Toast.makeText(mainActivity, "Can't put here",Toast.LENGTH_SHORT).show();
+                    {
+                        //START: INSERT AI CODE HERE================================================
+                        Random random = new Random();
+                        int position = random.nextInt(row*column);
+                        while(!isLegal(false,position))
+                        {
+                            position=random.nextInt(row*column);
+                        }
+                        //END: INSERT AI CODE HERE==================================================
+                        chessColorArray.set(position,"W");
+                        chessColorMaxtrix.get(position/column).set(position%column,"W");
+                        put(humanTurn,position);
+                        chessAdapter.notifyDataSetChanged();
+                        humanTurn=true;
+                        actionForFinish();
+                    }
                 }
+                else
+                    Toast.makeText(mainActivity, "Can't put here",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -257,6 +186,7 @@ public class PlayGame
                         int x1=x+dx[i], y1=y+dy[i];
                         while(x1+dx[i]>=0&&x1+dx[i]<row&&y1+dy[i]>=0&&y1+dy[i]<column)
                         {
+                            if(chessColorMaxtrix.get(x1+dx[i]).get(y1+dy[i]).equals("E")) break;
                             if(chessColorMaxtrix.get(x1+dx[i]).get(y1+dy[i]).equals("B"))
                             {
                                 isAnInstance=true;
@@ -297,6 +227,7 @@ public class PlayGame
                         int x1=x+dx[i], y1=y+dy[i];
                         while(x1+dx[i]>=0&&x1+dx[i]<row&&y1+dy[i]>=0&&y1+dy[i]<column)
                         {
+                            if(chessColorMaxtrix.get(x1+dx[i]).get(y1+dy[i]).equals("E")) break;
                             if(chessColorMaxtrix.get(x1+dx[i]).get(y1+dy[i]).equals("W"))
                             {
                                 isAnInstance=true;
@@ -327,6 +258,18 @@ public class PlayGame
     }
     int isFinish()
     {
+        //if both CPU and Human have no way to move, count number of white to determine winner
+        if(!isMoveLefts(true)&&!isMoveLefts(false))
+        {
+            int numOfWhite = 0;
+            for(int i=0;i<row*column;i++)
+            {
+                if(chessColorArray.get(i).equals("W")) numOfWhite++;
+            }
+            if(numOfWhite==row*column/2) return 0; //draw
+            if(numOfWhite<row*column/2) return -1;//human win
+            else return 1; //computer win
+        }
         //if all is white return 1, it mean computer win
         //if all is black return -1, it mean human win
         //if board full slot, count number of each color and return 1 or -1 or 0(draw case) or 2( not over) depend on counting
@@ -367,10 +310,6 @@ public class PlayGame
         if(numOfWhite<row*column/2) return -1;//human win
         else return 1; //computer win
     }
-    public void humanTurn()
-    {
-
-    }
     boolean isMoveLefts(boolean humanTurn)
     {
         for(int i=0;i<row;i++)
@@ -382,5 +321,47 @@ public class PlayGame
     }
     public void play() {
     }
-
+    void actionForFinish()
+    {
+        int res = isFinish();
+        if(res==-1)
+        {
+            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+            alert.setTitle("Congratulation!!!");
+            alert.setMessage("Winner winner chicken dinner");
+            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mainActivity.resetBoard(row,column);
+                }
+            });
+            alert.show();
+        }
+        if(res==0)
+        {
+            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+            alert.setTitle("Congratulation!!!");
+            alert.setMessage("You and CPU draw");
+            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mainActivity.resetBoard(row,column);
+                }
+            });
+            alert.show();
+        }
+        if(res==1)
+        {
+            AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+            alert.setTitle("condolatory!!!");
+            alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
+            alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mainActivity.resetBoard(row,column);
+                }
+            });
+            alert.show();
+        }
+    }
 }

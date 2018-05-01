@@ -1,6 +1,8 @@
 package helloworld.com.taquangtu132gmail.taquangtu.ai;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -173,5 +175,26 @@ public class MainActivity extends AppCompatActivity {
         initAdapter();
         Toast.makeText(this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
         PlayGame playGame = new PlayGame(this);
+    }
+    @Override
+    public void onBackPressed()
+    {
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+        alert.setTitle("Warning!!!");
+        alert.setMessage("Do you want to exit?");
+        alert.setCancelable(true);
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+              MainActivity.this.finish();
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //do nothing
+            }
+        });
+        alert.show();
     }
 }

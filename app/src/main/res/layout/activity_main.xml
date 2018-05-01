@@ -89,14 +89,15 @@
 
     <Button
         android:id="@+id/btResetBoard"
-        android:layout_width="200dp"
-        android:layout_height="86dp"
+        android:layout_width="101dp"
+        android:layout_height="51dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="8dp"
         android:text="New Board"
         app:layout_constraintBottom_toTopOf="@+id/imbNewGame"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pbTime" />
+        app:layout_constraintTop_toBottomOf="@+id/pbTime"
+        app:layout_constraintVertical_bias="0.0" />
 </android.support.constraint.ConstraintLayout>
