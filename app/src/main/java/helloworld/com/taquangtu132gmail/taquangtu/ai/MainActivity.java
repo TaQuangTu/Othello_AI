@@ -27,32 +27,20 @@ public class MainActivity extends AppCompatActivity {
     public int getRow() {
         return row;
     }
-    public void setRow(int row) {
-        this.row = row;
-    }
     public int getColumn() {
         return column;
-    }
-    public void setColumn(int column) {
-        this.column = column;
     }
     public GridView getGvBoard() {
         return gvBoard;
     }
-
     public ArrayList<String> getChessColorArray() {
         return chessColorArray;
     }
-
     public ImageButton getImbUndo() {
         return imbUndo;
     }
-
     public ImageButton getImbReUndo() {
         return imbReUndo;
-    }
-    public ImageButton getImbNewgame() {
-        return imbNewgame;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +68,7 @@ public class MainActivity extends AppCompatActivity {
         chessColorArray.set((row/2)*column+column/2,"B");
         chessAdapter = new ChessAdapter(MainActivity.this, R.layout.activity_chess_cell, chessColorArray);
         gvBoard.setAdapter(chessAdapter);
-
-        //DEMO==================================================================
         PlayGame playGame = new PlayGame(this);
-        playGame.play();
-        //DEMO==================================================================
     }
     int getDeviceWidth()
     {
@@ -153,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
     void setBoardSize()  //and column
     {
         int width = getDeviceWidth();
-        gvBoard.getLayoutParams().height=width;
         if(column>row)
         {
             gvBoard.getLayoutParams().height=width*row/column;
@@ -166,7 +149,10 @@ public class MainActivity extends AppCompatActivity {
     {
         return this.pbTime;
     }
-    public ChessAdapter getChessAdapter(){return this.chessAdapter;}
+    public ChessAdapter getChessAdapter()
+    {
+        return this.chessAdapter;
+    }
     public void resetBoard(int row, int column)
     {
         this.row=row;

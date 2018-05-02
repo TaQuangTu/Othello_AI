@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="20dp"
     android:layout_height="20dp"
-    android:padding="1dp"
+    android:padding="3dp"
     android:background="#9c9a9a"
     tools:context=".ChessCell">
     <ImageView
         android:background="@null"
-        android:padding="1dp"
+        android:padding="2dp"
         android:scaleType="fitXY"
         android:id="@+id/imvChess"
         android:layout_margin="0.5dp"

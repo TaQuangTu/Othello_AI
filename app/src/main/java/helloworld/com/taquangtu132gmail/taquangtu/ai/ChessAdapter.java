@@ -38,28 +38,25 @@ public class ChessAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup)
     {
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = layoutInflater.inflate(layoutResourceId, null);
+        if(view==null)
+        {
+            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = layoutInflater.inflate(layoutResourceId, null);
+        }
         ImageView imageView = view.findViewById(R.id.imvChess);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((MainActivity)context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels/(((MainActivity) context).getColumn())-8;
+        int width = (displayMetrics.widthPixels)/(((MainActivity) context).getColumn())-16;
+        imageView.getLayoutParams().height=width;
         if(chessColorArray.get(i).equals("B"))   //black
         {
             imageView.setImageResource(R.drawable.black);
-            imageView.getLayoutParams().height=width;
         }
         else
         if(chessColorArray.get(i).equals("W"))   //white
         {
                 imageView.setImageResource(R.drawable.white);
-                imageView.getLayoutParams().height=width;
         }
-        else  //if empty
-            {
-                imageView.getLayoutParams().height=width;
-            }
         return view;
     }
 }

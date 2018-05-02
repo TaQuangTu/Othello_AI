@@ -136,7 +136,7 @@ public class PlayGame
                     put(true,i);
                     chessAdapter.notifyDataSetChanged();
                     humanTurn=false;
-                    //action for finish
+                    //action if finish
                     actionForFinish();
                     if (!isMoveLefts(humanTurn))
                     {
