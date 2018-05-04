@@ -13,15 +13,13 @@ import java.util.Random;
 
 public class PlayGame
 {
-    boolean humanTurn=true;
-    int remainingTime = 90000;
-   private MainActivity mainActivity;
-   private int row, column;
-   private ArrayList<String> chessColorArray;
-   private GridView gvBoard;
-   private ProgressBar pbTime;
-   private ArrayList<ArrayList<String>> chessColorMaxtrix;
-   private ChessAdapter chessAdapter;
+    private MainActivity mainActivity;
+    private int row, column;
+    private ArrayList<String> chessColorArray;
+    private GridView gvBoard;
+    private ProgressBar pbTime;
+    private ArrayList<ArrayList<String>> chessColorMaxtrix;
+    private ChessAdapter chessAdapter;
     public PlayGame(MainActivity mainActivity) {
         this.mainActivity    = mainActivity;
         this.column          = mainActivity.getColumn();
@@ -42,7 +40,7 @@ public class PlayGame
         }
         setOnHumanClick();
     }
-    boolean isLegal(boolean turn, int position)
+    boolean isLegal(boolean isComputer, int position)
     {
         int x=position/column;
         int y=position%column;
@@ -53,7 +51,7 @@ public class PlayGame
         //if that position is not empty return false
         if(chessColorArray.get(position).equals("E")==false) return false;
         //
-        if(turn == true)
+        if(isComputer==false)
         {
             for(int i=0;i<8;i++)
             {
@@ -103,76 +101,87 @@ public class PlayGame
         gvBoard.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!isMoveLefts(true)||humanTurn==false)
+                if (isLegal(false, i))
                 {
-                    humanTurn = false;
-                    Toast.makeText(mainActivity,"You have no way to move, CPU turn", Toast.LENGTH_SHORT);
-                    while (!isMoveLefts(true)) //till human have a way to move
-                    {
-                        actionForFinish();
-                        humanTurn = false;
-                        Toast.makeText(mainActivity,"You have no way to move, CPU turn", Toast.LENGTH_SHORT);
-                        //START: INSERT AI CODE HERE================================================
-                        Random random = new Random();
-                        int position = random.nextInt(row*column);
-                        while(!isLegal(false,position))
-                        {
-                            position=random.nextInt(row*column);
-                        }
-                        //END: INSERT AI CODE HERE==================================================
-                        chessColorArray.set(position,"W");
-                        chessColorMaxtrix.get(position/column).set(position%column,"W");
-                        put(humanTurn,position);
-                        chessAdapter.notifyDataSetChanged();
-                        humanTurn=true;
-                        actionForFinish();
-                    }
-                }
-                else
-                if(isLegal(true, i))
-                {
-                    chessColorArray.set(i,"B");
-                    chessColorMaxtrix.get(i/column).set(i%column,"B");
-                    put(true,i);
+                    chessColorArray.set(i, "B");
+                    chessColorMaxtrix.get(i / column).set(i % column, "B");
+                    put(false, i);
                     chessAdapter.notifyDataSetChanged();
-                    humanTurn=false;
                     //action if finish
-                    actionForFinish();
-                    if (!isMoveLefts(humanTurn))
+                    if(isFinish()!=2) //if not over
                     {
-                            humanTurn = true;
-                            Toast.makeText(mainActivity,"CPU have no way to move, your turn", Toast.LENGTH_SHORT);
-                    }
-                    else
-                    {
-                        //START: INSERT AI CODE HERE================================================
-                        Random random = new Random();
-                        int position = random.nextInt(row*column);
-                        while(!isLegal(false,position))
-                        {
-                            position=random.nextInt(row*column);
-                        }
-                        //END: INSERT AI CODE HERE==================================================
-                        chessColorArray.set(position,"W");
-                        chessColorMaxtrix.get(position/column).set(position%column,"W");
-                        put(humanTurn,position);
-                        chessAdapter.notifyDataSetChanged();
-                        humanTurn=true;
                         actionForFinish();
+                        return;
+                    }
+                    //check if CPU has more one way to chose
+                    if(isFinish()==2)
+                    {
+                        if(isMoveLefts(true)==false)
+                        {
+                            Toast.makeText(mainActivity, "CPU have no way to continue, your turn", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            //START: INSERT AI CODE HERE================================================
+                            Random random = new Random();
+                            int position = random.nextInt(row * column);
+                            while (!isLegal(true, position)) {
+                                position = random.nextInt(row * column);
+                            }
+                          /*  ArtificialIntelligence ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
+                            int position = ai.findBestMove(chessColorMaxtrix, true);*/
+                            //END: INSERT AI CODE HERE==================================================
+                            chessColorArray.set(position, "W");
+                            chessColorMaxtrix.get(position / column).set(position % column, "W");
+                            put(true, position);
+                            chessAdapter.notifyDataSetChanged();
+                            if(isFinish()!=2)
+                            {
+                                actionForFinish();
+                                return;
+                            }
+                            else
+                            {
+                                while(isMoveLefts(false)==false)
+                                {
+                                    Toast.makeText(mainActivity, "You have no way to continue, CPU turn", Toast.LENGTH_SHORT).show();
+                                    //START: INSERT AI CODE HERE================================================
+                                    random = new Random();
+                                    position = random.nextInt(row * column);
+                                    while (!isLegal(true, position)) {
+                                        position = random.nextInt(row * column);
+                                    }
+                                   /* ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
+                                    position = ai.findBestMove(chessColorMaxtrix, true);*/
+                                    //END: INSERT AI CODE HERE==================================================
+                                    chessColorArray.set(position, "W");
+                                    chessColorMaxtrix.get(position / column).set(position % column, "W");
+                                    put(true, position);
+                                    chessAdapter.notifyDataSetChanged();
+                                    if(isFinish()!=2)
+                                    {
+                                        actionForFinish();
+                                        return;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-                else
-                    Toast.makeText(mainActivity, "Can't put here",Toast.LENGTH_SHORT).show();
+                 else
+                    {
+                       Toast.makeText(mainActivity, "Can't put here", Toast.LENGTH_SHORT).show();
+                    }
             }
         });
     }
-    void put(boolean humanTurn,int position)
+    void put(boolean isComputer,int position)
     {
         int x=position/column;
         int y=position%column;
         int dy[]={-1,0,1,1,1,0,-1,-1};
         int dx[]={-1,-1,-1,0,1,1,1,0};
-        if(humanTurn == true)
+        if(isComputer==false)
         {
             for(int i=0;i<8;i++)
             {
@@ -275,7 +284,6 @@ public class PlayGame
         //if board full slot, count number of each color and return 1 or -1 or 0(draw case) or 2( not over) depend on counting
         boolean whiteExists = false;
         boolean blackExists = false;
-        boolean boardFull   = false;
         //find white
         for(int i=0;i<row*column;i++)
         {
@@ -310,12 +318,12 @@ public class PlayGame
         if(numOfWhite<row*column/2) return -1;//human win
         else return 1; //computer win
     }
-    boolean isMoveLefts(boolean humanTurn)
+    boolean isMoveLefts(boolean isComputer)
     {
         for(int i=0;i<row;i++)
         {
             for(int j=0;j<column;j++)
-                if(isLegal(humanTurn,i*column+j)) return true;
+                if(isLegal(isComputer,i*column+j)) return true;
         }
         return false;
     }
@@ -335,6 +343,7 @@ public class PlayGame
                     mainActivity.resetBoard(row,column);
                 }
             });
+            alert.setCancelable(false);
             alert.show();
         }
         if(res==0)
@@ -342,6 +351,7 @@ public class PlayGame
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("Congratulation!!!");
             alert.setMessage("You and CPU draw");
+            alert.setCancelable(false);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -355,6 +365,7 @@ public class PlayGame
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("condolatory!!!");
             alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
+            alert.setCancelable(false);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
