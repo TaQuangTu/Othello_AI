@@ -9,7 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Random;
+
+import helloworld.com.taquangtu132gmail.taquangtu.ai.aiCalculator.Minimax;
 
 public class PlayGame
 {
@@ -114,7 +115,7 @@ public class PlayGame
                         return;
                     }
                     //check if CPU has more one way to chose
-                    if(isFinish()==2)
+                    else
                     {
                         if(isMoveLefts(true)==false)
                         {
@@ -123,16 +124,25 @@ public class PlayGame
                         else
                         {
                             //START: INSERT AI CODE HERE================================================
-                            Random random = new Random();
+                           /* Random random = new Random();
                             int position = random.nextInt(row * column);
                             while (!isLegal(true, position)) {
                                 position = random.nextInt(row * column);
+                            }*/
+                           /* ArtificialIntelligence ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
+                            ArrayList<ArrayList<String>> temp = new ArrayList<>();
+                            for(int it=0;it<row;it++)
+                            {
+                                temp.add(new ArrayList<String>());
+                                for(int j = 0;j<column;j++)
+                                {
+                                    temp.get(it).add(chessColorMaxtrix.get(it).get(j));
+                                }
                             }
-                          /*  ArtificialIntelligence ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
-                            int position = ai.findBestMove(chessColorMaxtrix, true);*/
+                            int position = ai.findBestMove(temp, true);*/
+                            Minimax minimax = new Minimax(chessColorMaxtrix);
+                            int position=minimax.findBestMove(1);
                             //END: INSERT AI CODE HERE==================================================
-                            chessColorArray.set(position, "W");
-                            chessColorMaxtrix.get(position / column).set(position % column, "W");
                             put(true, position);
                             chessAdapter.notifyDataSetChanged();
                             if(isFinish()!=2)
@@ -146,16 +156,25 @@ public class PlayGame
                                 {
                                     Toast.makeText(mainActivity, "You have no way to continue, CPU turn", Toast.LENGTH_SHORT).show();
                                     //START: INSERT AI CODE HERE================================================
-                                    random = new Random();
+                                   /* random = new Random();
                                     position = random.nextInt(row * column);
                                     while (!isLegal(true, position)) {
                                         position = random.nextInt(row * column);
-                                    }
+                                    }*/
                                    /* ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
-                                    position = ai.findBestMove(chessColorMaxtrix, true);*/
+                                    temp = new ArrayList<>();
+                                    for(int it=0;it<row;it++)
+                                    {
+                                        temp.add(new ArrayList<String>());
+                                        for(int j = 0;j<column;j++)
+                                        {
+                                            temp.get(it).add(chessColorMaxtrix.get(it).get(j));
+                                        }
+                                    }
+                                    position = ai.findBestMove(temp, true);*/
+                                    minimax = new Minimax(chessColorMaxtrix);
+                                    position=minimax.findBestMove(1);
                                     //END: INSERT AI CODE HERE==================================================
-                                    chessColorArray.set(position, "W");
-                                    chessColorMaxtrix.get(position / column).set(position % column, "W");
                                     put(true, position);
                                     chessAdapter.notifyDataSetChanged();
                                     if(isFinish()!=2)
@@ -206,6 +225,8 @@ public class PlayGame
                         }
                         if(!isAnInstance) continue;
                         //
+                        chessColorMaxtrix.get(x).set(y,"B");
+                        chessColorArray.set(position,"B");
                         chessColorMaxtrix.get(x+dx[i]).set(y+dy[i],"B");
                         chessColorArray.set((x+dx[i])*column+(y+dy[i]),"B");
                         int tempX=x+dx[i];
@@ -247,6 +268,8 @@ public class PlayGame
                         }
                         if(!isAnInstance) continue;
                         //
+                        chessColorMaxtrix.get(x).set(y,"W");
+                        chessColorArray.set(position,"W");
                         chessColorMaxtrix.get(x+dx[i]).set(y+dy[i],"W");
                         chessColorArray.set((x+dx[i])*column+(y+dy[i]),"W");
                         int tempX=x+dx[i];
@@ -276,8 +299,8 @@ public class PlayGame
                 if(chessColorArray.get(i).equals("W")) numOfWhite++;
             }
             if(numOfWhite==row*column/2) return 0; //draw
-            if(numOfWhite<row*column/2) return -1;//human win
-            else return 1; //computer win
+            if(numOfWhite<row*column/2) return -100;//human win
+            else return 100; //computer win
         }
         //if all is white return 1, it mean computer win
         //if all is black return -1, it mean human win
@@ -302,8 +325,8 @@ public class PlayGame
                 break;
             }
         }
-        if(!whiteExists) return -1; //human win
-        if(!blackExists) return 1;  //computer win
+        if(!whiteExists) return -100; //human win
+        if(!blackExists) return 100;  //computer win
         for(int i=0;i<row*column;i++)
         {
             if(chessColorArray.get(i).equals("E")) return 2; //not over
@@ -315,8 +338,8 @@ public class PlayGame
             if(chessColorArray.get(i).equals("W")) numOfWhite++;
         }
         if(numOfWhite==row*column/2) return 0; //draw
-        if(numOfWhite<row*column/2) return -1;//human win
-        else return 1; //computer win
+        if(numOfWhite<row*column/2) return -100;//human win
+        else return 100; //computer win
     }
     boolean isMoveLefts(boolean isComputer)
     {
@@ -327,12 +350,10 @@ public class PlayGame
         }
         return false;
     }
-    public void play() {
-    }
     void actionForFinish()
     {
         int res = isFinish();
-        if(res==-1)
+        if(res==-100)
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("Congratulation!!!");
@@ -360,7 +381,7 @@ public class PlayGame
             });
             alert.show();
         }
-        if(res==1)
+        if(res==100)
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("condolatory!!!");
