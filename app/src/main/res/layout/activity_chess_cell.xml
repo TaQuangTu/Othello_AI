@@ -6,7 +6,7 @@
     android:layout_height="20dp"
     android:padding="3dp"
     android:background="#9c9a9a"
-    tools:context=".ChessCell">
+    >
     <ImageView
         android:background="@null"
         android:padding="2dp"

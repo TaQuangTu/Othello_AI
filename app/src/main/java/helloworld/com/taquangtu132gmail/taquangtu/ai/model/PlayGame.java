@@ -1,16 +1,19 @@
-package helloworld.com.taquangtu132gmail.taquangtu.ai;
+package helloworld.com.taquangtu132gmail.taquangtu.ai.model;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import helloworld.com.taquangtu132gmail.taquangtu.ai.aiCalculator.LookupTable;
 import helloworld.com.taquangtu132gmail.taquangtu.ai.aiCalculator.Minimax;
+import helloworld.com.taquangtu132gmail.taquangtu.ai.view.ChessAdapter;
+import helloworld.com.taquangtu132gmail.taquangtu.ai.view.MainActivity;
 
 public class PlayGame
 {
@@ -18,35 +21,49 @@ public class PlayGame
     private int row, column;
     private ArrayList<String> chessColorArray;
     private GridView gvBoard;
-    private ProgressBar pbTime;
     private ArrayList<ArrayList<String>> chessColorMaxtrix;
     private ChessAdapter chessAdapter;
     public PlayGame(MainActivity mainActivity) {
-        this.mainActivity    = mainActivity;
-        this.column          = mainActivity.getColumn();
-        this.row             = mainActivity.getRow();
-        this.chessColorArray = mainActivity.getChessColorArray();
-        this.gvBoard         = mainActivity.getGvBoard();
-        this.pbTime          = mainActivity.getPBTime();
-        this.chessAdapter    = mainActivity.getChessAdapter();
-        this.chessColorMaxtrix=new ArrayList<>(row);
-        for(int i=0;i<row;i++)
-        {
+        this.mainActivity = mainActivity;
+        this.column = mainActivity.getColumn();
+        this.row = mainActivity.getRow();
+        this.chessColorArray = mainActivity.chessColorArray;
+        this.gvBoard = mainActivity.getGvBoard();
+        this.chessAdapter = mainActivity.getChessAdapter();
+        this.chessColorMaxtrix = new ArrayList<>(row);
+        LookupTable.generateScoreBoard(row, column);
+        for (int i = 0; i < row; i++) {
             this.chessColorMaxtrix.add(new ArrayList<String>(column));
         }
-        for(int i=0;i<row;i++)
-        {
-            for(int j=0;j<column;j++)
-                chessColorMaxtrix.get(i).add(chessColorArray.get(i*column+j));
-        }
+        updateChessColorMatrix();
+        mainActivity.getImbUndo().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                undo();
+            }
+        });
         setOnHumanClick();
     }
+
+    public void undo() {
+        if (mainActivity.stateIndex > 0) {
+            for (int i = 0; i < row; i++) {
+                for (int j = 0; j < column; j++)
+                {
+                    chessColorArray.set(i * column + j, mainActivity.getStorgedState().get(mainActivity.stateIndex - 1).get(i * column + j));
+                    chessColorMaxtrix.get(i).set(j,mainActivity.getStorgedState().get(mainActivity.stateIndex - 1).get(i * column + j));
+                }
+            }
+            mainActivity.getStorgedState().remove(--mainActivity.stateIndex);
+            this.gvBoard.setAdapter(this.chessAdapter);
+            this.chessAdapter.notifyDataSetChanged();
+        }
+    }
+
     boolean isLegal(boolean isComputer, int position)
     {
         int x=position/column;
         int y=position%column;
-        /*int dy[]={-1,0,1,1,1,0,-1,-1};
-        int dx[]={1,1,1,0,-1,-1,-1,0};*/
         int dy[]={-1,0,1,1,1,0,-1,-1};
         int dx[]={-1,-1,-1,0,1,1,1,0};
         //if that position is not empty return false
@@ -104,8 +121,16 @@ public class PlayGame
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (isLegal(false, i))
                 {
-                    chessColorArray.set(i, "B");
-                    chessColorMaxtrix.get(i / column).set(i % column, "B");
+                    //store current state for undo
+                    ArrayList<String> boardState = new ArrayList<>();
+                    for (int it = 0; it < row; it++) {
+                        for (int j = 0; j < column; j++) {
+                            boardState.add(chessColorArray.get(it * column + j));
+                        }
+
+                    }
+                    mainActivity.getStorgedState().add(boardState);
+                    mainActivity.stateIndex++;
                     put(false, i);
                     chessAdapter.notifyDataSetChanged();
                     //action if finish
@@ -119,29 +144,13 @@ public class PlayGame
                     {
                         if(isMoveLefts(true)==false)
                         {
-                            Toast.makeText(mainActivity, "CPU have no way to continue, your turn", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mainActivity, "CPU has no way to continue, your turn", Toast.LENGTH_SHORT).show();
                         }
                         else
                         {
                             //START: INSERT AI CODE HERE================================================
-                           /* Random random = new Random();
-                            int position = random.nextInt(row * column);
-                            while (!isLegal(true, position)) {
-                                position = random.nextInt(row * column);
-                            }*/
-                           /* ArtificialIntelligence ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
-                            ArrayList<ArrayList<String>> temp = new ArrayList<>();
-                            for(int it=0;it<row;it++)
-                            {
-                                temp.add(new ArrayList<String>());
-                                for(int j = 0;j<column;j++)
-                                {
-                                    temp.get(it).add(chessColorMaxtrix.get(it).get(j));
-                                }
-                            }
-                            int position = ai.findBestMove(temp, true);*/
                             Minimax minimax = new Minimax(chessColorMaxtrix);
-                            int position=minimax.findBestMove(1);
+                            int position=minimax.findBestMove(mainActivity.level);
                             //END: INSERT AI CODE HERE==================================================
                             put(true, position);
                             chessAdapter.notifyDataSetChanged();
@@ -155,25 +164,8 @@ public class PlayGame
                                 while(isMoveLefts(false)==false)
                                 {
                                     Toast.makeText(mainActivity, "You have no way to continue, CPU turn", Toast.LENGTH_SHORT).show();
-                                    //START: INSERT AI CODE HERE================================================
-                                   /* random = new Random();
-                                    position = random.nextInt(row * column);
-                                    while (!isLegal(true, position)) {
-                                        position = random.nextInt(row * column);
-                                    }*/
-                                   /* ai = new ArtificialIntelligence(PlayGame.this.chessColorMaxtrix);
-                                    temp = new ArrayList<>();
-                                    for(int it=0;it<row;it++)
-                                    {
-                                        temp.add(new ArrayList<String>());
-                                        for(int j = 0;j<column;j++)
-                                        {
-                                            temp.get(it).add(chessColorMaxtrix.get(it).get(j));
-                                        }
-                                    }
-                                    position = ai.findBestMove(temp, true);*/
                                     minimax = new Minimax(chessColorMaxtrix);
-                                    position=minimax.findBestMove(1);
+                                    position=minimax.findBestMove(mainActivity.level);
                                     //END: INSERT AI CODE HERE==================================================
                                     put(true, position);
                                     chessAdapter.notifyDataSetChanged();
@@ -187,9 +179,9 @@ public class PlayGame
                         }
                     }
                 }
-                 else
+                else
                     {
-                       Toast.makeText(mainActivity, "Can't put here", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mainActivity,"Not a legal move, try again", Toast.LENGTH_SHORT).show();
                     }
             }
         });
@@ -287,6 +279,7 @@ public class PlayGame
                 }
             }
         }
+        Log.d("put", "position: "+position);
     }
     int isFinish()
     {
@@ -299,8 +292,8 @@ public class PlayGame
                 if(chessColorArray.get(i).equals("W")) numOfWhite++;
             }
             if(numOfWhite==row*column/2) return 0; //draw
-            if(numOfWhite<row*column/2) return -100;//human win
-            else return 100; //computer win
+            if(numOfWhite<row*column/2) return -31000;//human win
+            else return 31000; //computer win
         }
         //if all is white return 1, it mean computer win
         //if all is black return -1, it mean human win
@@ -317,16 +310,14 @@ public class PlayGame
             }
         }
         //find black
-        for(int i=0;i<row*column;i++)
-        {
-            if(chessColorArray.get(i).equals("B"))
-            {
-                blackExists=true;
+        for (int i = 0; i < row * column; i++) {
+            if (chessColorArray.get(i).equals("B")) {
+                blackExists = true;
                 break;
             }
         }
-        if(!whiteExists) return -100; //human win
-        if(!blackExists) return 100;  //computer win
+        if(!whiteExists) return -31000; //human win
+        if(!blackExists) return 31000;  //computer win
         for(int i=0;i<row*column;i++)
         {
             if(chessColorArray.get(i).equals("E")) return 2; //not over
@@ -338,8 +329,8 @@ public class PlayGame
             if(chessColorArray.get(i).equals("W")) numOfWhite++;
         }
         if(numOfWhite==row*column/2) return 0; //draw
-        if(numOfWhite<row*column/2) return -100;//human win
-        else return 100; //computer win
+        if(numOfWhite<row*column/2) return -31000;//human win
+        else return 31000; //computer win
     }
     boolean isMoveLefts(boolean isComputer)
     {
@@ -353,7 +344,7 @@ public class PlayGame
     void actionForFinish()
     {
         int res = isFinish();
-        if(res==-100)
+        if(res==-31000)
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("Congratulation!!!");
@@ -370,7 +361,7 @@ public class PlayGame
         if(res==0)
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-            alert.setTitle("Congratulation!!!");
+            alert.setTitle("DRAW!!!");
             alert.setMessage("You and CPU draw");
             alert.setCancelable(false);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
@@ -381,10 +372,10 @@ public class PlayGame
             });
             alert.show();
         }
-        if(res==100)
+        if(res==31000)
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-            alert.setTitle("condolatory!!!");
+            alert.setTitle("YOU LOSE!!!");
             alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
             alert.setCancelable(false);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
@@ -394,6 +385,13 @@ public class PlayGame
                 }
             });
             alert.show();
+        }
+    }
+
+    public void updateChessColorMatrix() {
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < column; j++)
+                chessColorMaxtrix.get(i).add(chessColorArray.get(i * column + j));
         }
     }
 }

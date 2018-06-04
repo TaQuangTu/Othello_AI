@@ -1,15 +1,16 @@
-package helloworld.com.taquangtu132gmail.taquangtu.ai;
+package helloworld.com.taquangtu132gmail.taquangtu.ai.view;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.Button;
+
+import helloworld.com.taquangtu132gmail.taquangtu.ai.R;
 
 public class StartActivity extends AppCompatActivity {
 
-    private ImageButton imbNewGame, imbRules;
+    private Button imbNewGame, imbRules;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +35,8 @@ public class StartActivity extends AppCompatActivity {
         imbRules.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(StartActivity.this,"See more on Internet", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(StartActivity.this, RuleActivity.class);
+                StartActivity.this.startActivity(intent);
             }
         });
     }

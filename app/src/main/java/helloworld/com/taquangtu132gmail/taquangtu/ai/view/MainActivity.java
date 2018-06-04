@@ -1,4 +1,4 @@
-package helloworld.com.taquangtu132gmail.taquangtu.ai;
+package helloworld.com.taquangtu132gmail.taquangtu.ai.view;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,23 +7,31 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import helloworld.com.taquangtu132gmail.taquangtu.ai.model.PlayGame;
+import helloworld.com.taquangtu132gmail.taquangtu.ai.R;
+
 public class MainActivity extends AppCompatActivity {
+    private ArrayList<ArrayList<String>> storgedState;
     private int row=8,column=8; //row and column of the board
+    private Spinner spLevel;
     private GridView gvBoard;
-    private ArrayList<String> chessColorArray;
-    private ImageButton imbUndo, imbReUndo, imbNewgame;
+    private ImageButton imbUndo, imbNewgame;
     private ProgressBar pbTime;
-    private Button btResetBoard;
     private ChessAdapter chessAdapter;
+    private Button btResetBoard;
+
     public int getRow() {
         return row;
     }
@@ -33,15 +41,13 @@ public class MainActivity extends AppCompatActivity {
     public GridView getGvBoard() {
         return gvBoard;
     }
-    public ArrayList<String> getChessColorArray() {
-        return chessColorArray;
-    }
     public ImageButton getImbUndo() {
         return imbUndo;
     }
-    public ImageButton getImbReUndo() {
-        return imbReUndo;
-    }
+    public int stateIndex = 0; //use for undo
+    public int level = 1;
+    public ArrayList<String> chessColorArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         //declare adapter, arrayList, setAdapter
         initAdapter();
         setOnClickForView();
-        Toast.makeText(this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
     }
     void initAdapter() //and ArrayList, setAdapter
     {
@@ -62,13 +67,25 @@ public class MainActivity extends AppCompatActivity {
             chessColorArray.add("E");
         }
         //set four first piece
-        chessColorArray.set((row/2-1)*column+column/2-1,"B");
-        chessColorArray.set((row/2-1)*column+column/2,"W");
-        chessColorArray.set((row/2)*column+column/2-1,"W");
-        chessColorArray.set((row/2)*column+column/2,"B");
+        chessColorArray.set((row/2-1)*column+column/2-1,"W");
+        chessColorArray.set((row/2-1)*column+column/2,"B");
+        chessColorArray.set((row/2)*column+column/2-1,"B");
+        chessColorArray.set((row/2)*column+column/2,"W");
         chessAdapter = new ChessAdapter(MainActivity.this, R.layout.activity_chess_cell, chessColorArray);
         gvBoard.setAdapter(chessAdapter);
         PlayGame playGame = new PlayGame(this);
+    }
+
+    public void addState()  //to undo when necessary
+    {
+        ArrayList<String> boardState=new ArrayList<>();
+        for(int i = 0 ;i<row;i++)
+        {
+            for(int j = 0; j <column; j++)
+            boardState.add(chessColorArray.get(i*column+j));
+        }
+        storgedState.add(boardState);
+        stateIndex++;
     }
     int getDeviceWidth()
     {
@@ -76,17 +93,55 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.widthPixels;
     }
-    void mapView()
+    void mapView() //and init something
     {
+        imbUndo      = (ImageButton) findViewById(R.id.imbUndo);
+        spLevel     = (Spinner) findViewById(R.id.spinner);
         pbTime      = (ProgressBar) findViewById(R.id.pbTime);
         gvBoard     = (GridView) findViewById(R.id.gvBoard);
         imbUndo     = (ImageButton) findViewById(R.id.imbUndo);
-        imbReUndo   = (ImageButton) findViewById(R.id.imbReUndo);
         imbNewgame  = (ImageButton) findViewById(R.id.imbNewGame);
         btResetBoard= (Button) findViewById(R.id.btResetBoard);
+        storgedState= new ArrayList<>();
     }
     public void setOnClickForView()
     {
+        //spiner setting
+        String paths[]={"Noob","Chicken" ,"Profession", "Master"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_spinner_item,paths);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spLevel.setAdapter(adapter);
+        spLevel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                 if(i==0)//noob
+                 {
+                     level = 1;
+                 }
+                 else
+                 if(i==1)//checken
+                 {
+                    level = 3;
+                 }
+                 else
+                 if(i==2)//professional
+                 {
+                    level = 5;
+                 }
+                 if(i==3)//master
+                 {
+                     level = 6;
+                 }
+                 MainActivity.this.resetBoard(row,column);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         imbNewgame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
                 setBoardSize();
                 //declare adapter, arrayList, setAdapter
                 initAdapter();
-                Toast.makeText(MainActivity.this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
             }
         });
         btResetBoard.setOnClickListener(new View.OnClickListener() {
@@ -121,7 +175,12 @@ public class MainActivity extends AppCompatActivity {
                                 {
                                     int newRow =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewRow)).getText().toString().trim());
                                     int newCol =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewColumn)).getText().toString().trim());
-                                    if(newRow<=3||newCol<=3) Toast.makeText(MainActivity.this,"row and column must greater 3, try again!!!", Toast.LENGTH_SHORT).show();
+                                    if(newRow<=3||newCol<=3) Toast.makeText(MainActivity.this,"row and column must be greater 3, try again!!!", Toast.LENGTH_SHORT).show();
+                                    else
+                                        if(newRow>10||newCol>10)
+                                        {
+                                            Toast.makeText(MainActivity.this,"row and column must be less than 10, try again!!!", Toast.LENGTH_SHORT).show();
+                                        }
                                     else
                                         {
                                             resetBoard(newRow, newCol);
@@ -155,11 +214,12 @@ public class MainActivity extends AppCompatActivity {
     }
     public void resetBoard(int row, int column)
     {
+        this.stateIndex = 0;
+        this.storgedState = new ArrayList<>();
         this.row=row;
         this.column=column;
         setBoardSize();
         initAdapter();
-        Toast.makeText(this,"YOU ARE BLACK, let's start", Toast.LENGTH_LONG).show();
         PlayGame playGame = new PlayGame(this);
     }
     @Override
@@ -182,5 +242,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         alert.show();
+    }
+
+    public ArrayList<ArrayList<String>> getStorgedState() {
+        return storgedState;
     }
 }
