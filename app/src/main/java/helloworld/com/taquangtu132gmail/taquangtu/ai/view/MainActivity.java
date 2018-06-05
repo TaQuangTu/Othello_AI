@@ -118,21 +118,53 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                  if(i==0)//noob
                  {
-                     level = 1;
+                     if(row*column<=100)
+                     {
+                         level = 2;
+                     }
+                     else
+                         {
+                             level = 1;
+                         }
                  }
                  else
                  if(i==1)//checken
                  {
-                    level = 3;
+                     if(row*column<=100)
+                     {
+                         level = 3;
+                     }
+                     else
+                     {
+                         level = 2;
+                     }
                  }
                  else
                  if(i==2)//professional
                  {
-                    level = 5;
+                     if(row*column<=64)
+                     {
+                         level = 5;
+                     }
+                     else
+                     {
+                         level = 3;
+                     }
                  }
                  if(i==3)//master
                  {
-                     level = 6;
+                     if(row*column<=49)
+                     {
+                         level = 9;
+                     }
+                     else if(row*column<=100)
+                     {
+                         level = 6;
+                     }
+                     else
+                         {
+                             level = 4;
+                         }
                  }
                  MainActivity.this.resetBoard(row,column);
             }
@@ -177,9 +209,9 @@ public class MainActivity extends AppCompatActivity {
                                     int newCol =Integer.parseInt(((EditText)dialog.findViewById(R.id.etNewColumn)).getText().toString().trim());
                                     if(newRow<=3||newCol<=3) Toast.makeText(MainActivity.this,"row and column must be greater 3, try again!!!", Toast.LENGTH_SHORT).show();
                                     else
-                                        if(newRow>10||newCol>10)
+                                        if(newRow>16||newCol>16)
                                         {
-                                            Toast.makeText(MainActivity.this,"row and column must be less than 10, try again!!!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(MainActivity.this,"row and column must be less than 16, try again!!!", Toast.LENGTH_SHORT).show();
                                         }
                                     else
                                         {
