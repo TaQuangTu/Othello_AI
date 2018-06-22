@@ -42,24 +42,70 @@ public class PlayGame
                 undo();
             }
         });
+        mainActivity.getImbRedo().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redo();
+            }
+        });
         setOnHumanClick();
     }
 
-    public void undo() {
-        if (mainActivity.stateIndex > 0) {
+    public void redo() {
+        int size = mainActivity.getStorgedState().size();
+        if (mainActivity.stateIndex < size) {
             for (int i = 0; i < row; i++) {
-                for (int j = 0; j < column; j++)
-                {
-                    chessColorArray.set(i * column + j, mainActivity.getStorgedState().get(mainActivity.stateIndex - 1).get(i * column + j));
-                    chessColorMaxtrix.get(i).set(j,mainActivity.getStorgedState().get(mainActivity.stateIndex - 1).get(i * column + j));
+                for (int j = 0; j < column; j++) {
+                    chessColorArray.set(i * column + j, mainActivity.getStorgedState().get(mainActivity.stateIndex).get(i * column + j));
+                    chessColorMaxtrix.get(i).set(j, mainActivity.getStorgedState().get(mainActivity.stateIndex).get(i * column + j));
                 }
             }
-            mainActivity.getStorgedState().remove(--mainActivity.stateIndex);
+            ++mainActivity.stateIndex;
             this.gvBoard.setAdapter(this.chessAdapter);
             this.chessAdapter.notifyDataSetChanged();
         }
     }
-
+    public void undo()
+    {
+        if (mainActivity.stateIndex > 0)
+        {
+            if (mainActivity.stateIndex == mainActivity.getStorgedState().size())
+            {
+                ArrayList<String> boardState = new ArrayList<>();
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < column; j++)
+                        boardState.add(mainActivity.chessColorArray.get(i * column + j));
+                }
+                mainActivity.getStorgedState().add(boardState);
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < column; j++)
+                    {
+                        chessColorArray.set(i * column + j, mainActivity.getStorgedState().get(mainActivity.stateIndex - 1).get(i * column + j));
+                        chessColorMaxtrix.get(i).set(j, mainActivity.getStorgedState().get(mainActivity.stateIndex - 1).get(i * column + j));
+                    }
+                }
+            }
+            else
+             {
+                 if(mainActivity.stateIndex>1)
+                 {
+                     for (int i = 0; i < row; i++)
+                     {
+                         for (int j = 0; j < column; j++)
+                         {
+                             chessColorArray.set(i * column + j, mainActivity.getStorgedState().get(mainActivity.stateIndex - 2).get(i * column + j));
+                             chessColorMaxtrix.get(i).set(j, mainActivity.getStorgedState().get(mainActivity.stateIndex - 2).get(i * column + j));
+                         }
+                     }
+                     --mainActivity.stateIndex;
+                 }
+             }
+        }
+         this.gvBoard.setAdapter(this.chessAdapter);
+         this.chessAdapter.notifyDataSetChanged();
+    }
     boolean isLegal(boolean isComputer, int position)
     {
         int x=position/column;
@@ -121,16 +167,15 @@ public class PlayGame
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (isLegal(false, i))
                 {
+                    //mainActivity.progressBarCircel.setVisibility(View.VISIBLE);
                     //store current state for undo
                     ArrayList<String> boardState = new ArrayList<>();
                     for (int it = 0; it < row; it++) {
                         for (int j = 0; j < column; j++) {
                             boardState.add(chessColorArray.get(it * column + j));
                         }
-
                     }
-                    mainActivity.getStorgedState().add(boardState);
-                    mainActivity.stateIndex++;
+                    mainActivity.addState();
                     put(false, i);
                     chessAdapter.notifyDataSetChanged();
                     //action if finish
@@ -163,6 +208,7 @@ public class PlayGame
                             {
                                 while(isMoveLefts(false)==false)
                                 {
+                                    //START: INSERT AI CODE HERE==================================================
                                     Toast.makeText(mainActivity, "You have no way to continue, CPU turn", Toast.LENGTH_SHORT).show();
                                     minimax = new Minimax(chessColorMaxtrix);
                                     position=minimax.findBestMove(mainActivity.level);
@@ -287,12 +333,14 @@ public class PlayGame
         if(!isMoveLefts(true)&&!isMoveLefts(false))
         {
             int numOfWhite = 0;
+            int numOfBlack = 0;
             for(int i=0;i<row*column;i++)
             {
                 if(chessColorArray.get(i).equals("W")) numOfWhite++;
+                if (chessColorArray.get(i).equals("B")) numOfBlack++;
             }
-            if(numOfWhite==row*column/2) return 0; //draw
-            if(numOfWhite<row*column/2) return -31000;//human win
+            if (numOfWhite == numOfBlack) return 0; //draw
+            if (numOfWhite < numOfBlack) return -31000;//human win
             else return 31000; //computer win
         }
         //if all is white return 1, it mean computer win
