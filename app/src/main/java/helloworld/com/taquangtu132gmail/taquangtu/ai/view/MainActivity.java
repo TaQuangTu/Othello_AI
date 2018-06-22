@@ -27,11 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private int row=8,column=8; //row and column of the board
     private Spinner spLevel;
     private GridView gvBoard;
-    private ImageButton imbUndo, imbNewgame;
+    private ImageButton imbUndo,imbRedo, imbNewgame;
     private ProgressBar pbTime;
     private ChessAdapter chessAdapter;
     private Button btResetBoard;
 
+    public ProgressBar progressBarCircel;
     public int getRow() {
         return row;
     }
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public ImageButton getImbUndo() {
         return imbUndo;
     }
+    public ImageButton getImbRedo(){return imbRedo;}
     public int stateIndex = 0; //use for undo
     public int level = 1;
     public ArrayList<String> chessColorArray;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         //declare adapter, arrayList, setAdapter
         initAdapter();
         setOnClickForView();
+        //ProgressBar is played in CPU calculating time only
+        progressBarCircel.setVisibility(View.INVISIBLE);
     }
     void initAdapter() //and ArrayList, setAdapter
     {
@@ -76,25 +80,16 @@ public class MainActivity extends AppCompatActivity {
         PlayGame playGame = new PlayGame(this);
     }
 
-    public void addState()  //to undo when necessary
-    {
-        ArrayList<String> boardState=new ArrayList<>();
-        for(int i = 0 ;i<row;i++)
-        {
-            for(int j = 0; j <column; j++)
-            boardState.add(chessColorArray.get(i*column+j));
-        }
-        storgedState.add(boardState);
-        stateIndex++;
-    }
-    int getDeviceWidth()
+    public int getDeviceWidth()
     {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.widthPixels;
     }
-    void mapView() //and init something
+    public void mapView() //and init something
     {
+        imbRedo     = findViewById(R.id.imbRedo);
+        progressBarCircel = findViewById(R.id.pb_circle);
         imbUndo      = (ImageButton) findViewById(R.id.imbUndo);
         spLevel     = (Spinner) findViewById(R.id.spinner);
         pbTime      = (ProgressBar) findViewById(R.id.pbTime);
@@ -104,6 +99,24 @@ public class MainActivity extends AppCompatActivity {
         btResetBoard= (Button) findViewById(R.id.btResetBoard);
         storgedState= new ArrayList<>();
     }
+    public void addState()
+    {
+        //remove from size-1 to stateIndex-1
+        for(int i=storgedState.size()-1;i>=stateIndex;i--)
+        {
+            storgedState.remove(i);
+        }
+        //then add new state
+        ArrayList<String> boardState=new ArrayList<>();
+        for(int i = 0 ;i<row;i++)
+        {
+            for(int j = 0; j <column; j++)
+                boardState.add(chessColorArray.get(i*column+j));
+        }
+        storgedState.add(boardState);
+        stateIndex++;
+    }
+
     public void setOnClickForView()
     {
         //spiner setting
@@ -181,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 setBoardSize();
                 //declare adapter, arrayList, setAdapter
                 initAdapter();
+                storgedState.clear();
+                stateIndex=0;
             }
         });
         btResetBoard.setOnClickListener(new View.OnClickListener() {
@@ -235,10 +250,6 @@ public class MainActivity extends AppCompatActivity {
         else
             gvBoard.getLayoutParams().height=width;
         gvBoard.setNumColumns(column);
-    }
-    public ProgressBar getPBTime()
-    {
-        return this.pbTime;
     }
     public ChessAdapter getChessAdapter()
     {
