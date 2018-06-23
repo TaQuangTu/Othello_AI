@@ -23,6 +23,7 @@ public class PlayGame
     private GridView gvBoard;
     private ArrayList<ArrayList<String>> chessColorMaxtrix;
     private ChessAdapter chessAdapter;
+
     public PlayGame(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.column = mainActivity.getColumn();
@@ -167,7 +168,9 @@ public class PlayGame
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (isLegal(false, i))
                 {
-                    //mainActivity.progressBarCircel.setVisibility(View.VISIBLE);
+                    mainActivity.countDownTimer.cancel();
+                    mainActivity.timeToThink = 15;
+                    mainActivity.pbTime.setProgress(mainActivity.timeToThink);
                     //store current state for undo
                     ArrayList<String> boardState = new ArrayList<>();
                     for (int it = 0; it < row; it++) {
@@ -190,6 +193,7 @@ public class PlayGame
                         if(isMoveLefts(true)==false)
                         {
                             Toast.makeText(mainActivity, "CPU has no way to continue, your turn", Toast.LENGTH_SHORT).show();
+                            mainActivity.countDownTimer.start();
                         }
                         else
                         {
@@ -221,6 +225,7 @@ public class PlayGame
                                         return;
                                     }
                                 }
+                                mainActivity.countDownTimer.start();
                             }
                         }
                     }
@@ -435,7 +440,6 @@ public class PlayGame
             alert.show();
         }
     }
-
     public void updateChessColorMatrix() {
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++)
