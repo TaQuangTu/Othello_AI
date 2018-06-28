@@ -20,7 +20,7 @@ public class Minimax {
     }
 
     //check for putting at x,y a isComputer's piece
-    boolean isLegal(int x, int y, boolean isComputer) {
+    public boolean isLegal(int x, int y, boolean isComputer) {
         int dy[] = {-1, 0, 1, 1, 1, 0, -1, -1};
         int dx[] = {-1, -1, -1, 0, 1, 1, 1, 0};
         //if that position is not empty return false
@@ -64,7 +64,7 @@ public class Minimax {
             return false;
         }
     }
-    boolean isMovesLeft(boolean isComputer) {
+    public boolean isMovesLeft(boolean isComputer) {
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
                 if (isLegal(i, j, isComputer)) return true;
@@ -93,7 +93,7 @@ public class Minimax {
         return 31000; //computer win
     }
 
-    int minimax(boolean isComputer, int depth, int maxDepth, int alpha, int beta)
+    public int minimax(boolean isComputer, int depth, int maxDepth, int alpha, int beta)
     {
         //if finish
         if(isFinishState())
@@ -110,17 +110,7 @@ public class Minimax {
         //TODO: let's modify this heuristic evaluation function to get the best move
         if(depth==maxDepth)
         {
-            int sumOfWhite = 0;
-            int sumOfBlack = 0;
-            for(int i=0;i<row;i++)
-            {
-                for(int j=0;j<column;j++)
-                {
-                    if(chessColorMatrix.get(i).get(j).equals("B")) sumOfBlack+=LookupTable.scoreBoard.get(i*column+j);
-                    if(chessColorMatrix.get(i).get(j).equals("W")) sumOfWhite+=LookupTable.scoreBoard.get(i*column+j);
-                }
-            }
-            return sumOfWhite - sumOfBlack;
+            return heuristicEvaluation();
         }
         if(isComputer==false)
         {
@@ -167,8 +157,6 @@ public class Minimax {
                         chessColorMatrix = t;
                         if (beta <= alpha)
                             return alpha;
-                        //undo chessColorMatrix
-                        chessColorMatrix = t;
                     }
                 }
             }
@@ -203,7 +191,7 @@ public class Minimax {
         return position;
     }
 
-    void put(boolean isComputer, int x, int y) {
+    public void put(boolean isComputer, int x, int y) {
 
         int dy[] = {-1, 0, 1, 1, 1, 0, -1, -1};
         int dx[] = {-1, -1, -1, 0, 1, 1, 1, 0};
@@ -273,5 +261,84 @@ public class Minimax {
                 }
             }
         }
+    }
+    int heuristicEvaluation()
+    {
+        int sumOfWhite = 0;
+        int sumOfBlack = 0;
+        for(int i=0;i<row;i++)
+        {
+            for(int j=0;j<column;j++)
+            {
+                if(chessColorMatrix.get(i).get(j).equals("B")) sumOfBlack+=LookupTable.scoreBoard.get(i*column+j);
+                if(chessColorMatrix.get(i).get(j).equals("W")) sumOfWhite+=LookupTable.scoreBoard.get(i*column+j);
+            }
+        }
+        if(chessColorMatrix.get(0).get(1).equals("B"))
+        {
+            if(chessColorMatrix.get(0).get(0).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(1).get(0).equals("B"))
+        {
+            if(chessColorMatrix.get(0).get(0).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(0).get(column-2).equals("B"))
+        {
+            if(chessColorMatrix.get(0).get(column-1).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(1).get(column-1).equals("B"))
+        {
+            if(chessColorMatrix.get(0).get(column-1).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-2).get(0).equals("B"))
+        {
+            if(chessColorMatrix.get(row-1).get(0).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-2).get(column-1).equals("B"))
+        {
+            if(chessColorMatrix.get(row-1).get(column-1).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-1).get(1).equals("B"))
+        {
+            if(chessColorMatrix.get(row-1).get(0).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-1).get(column-2).equals("B"))
+        {
+            if(chessColorMatrix.get(row-1).get(column-1).equals("B")) sumOfBlack+=(row*column/2);
+        }
+        //
+        if(chessColorMatrix.get(0).get(1).equals("W"))
+        {
+            if(chessColorMatrix.get(0).get(0).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(1).get(0).equals("W"))
+        {
+            if(chessColorMatrix.get(0).get(0).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(0).get(column-2).equals("W"))
+        {
+            if(chessColorMatrix.get(0).get(column-1).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(1).get(column-1).equals("W"))
+        {
+            if(chessColorMatrix.get(0).get(column-1).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-2).get(0).equals("W"))
+        {
+            if(chessColorMatrix.get(row-1).get(0).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-2).get(column-1).equals("W"))
+        {
+            if(chessColorMatrix.get(row-1).get(column-1).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-1).get(1).equals("W"))
+        {
+            if(chessColorMatrix.get(row-1).get(0).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        if(chessColorMatrix.get(row-1).get(column-2).equals("W"))
+        {
+            if(chessColorMatrix.get(row-1).get(column-1).equals("W")) sumOfWhite+=(row*column/2);
+        }
+        return sumOfWhite - sumOfBlack;
     }
 }
