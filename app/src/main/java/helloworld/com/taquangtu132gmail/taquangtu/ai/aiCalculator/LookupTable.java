@@ -8,8 +8,6 @@ public class LookupTable
     public static void generateScoreBoard(int row, int column)
     {
         scoreBoard = new ArrayList<>(row*column);
-
-        //positive value
         for(int i=0;i<column*row;i++) scoreBoard.add(1);
         for(int i=0;i<column;i++)
         {
@@ -25,15 +23,5 @@ public class LookupTable
         scoreBoard.set(column-1,row*column/2);
         scoreBoard.set((row-1)*column,row*column/2);
         scoreBoard.set((row-1)*column+column-1,row*column/2);
-        //negative value
-
-        scoreBoard.set(1,-row*column/2);
-        scoreBoard.set(column-2,-row*column/2);
-        scoreBoard.set(column+1,-row*column/2);
-        scoreBoard.set(2*column-1,-row*column/2);
-        scoreBoard.set((row-2)*column,-row*column/2);
-        scoreBoard.set((row-2)*column+column-1,-row*column/2);
-        scoreBoard.set((row-1)*column+1,-row*column/2);
-        scoreBoard.set(row*column-2,-row*column/2);
     }
 }
