@@ -79,43 +79,18 @@
         android:layout_width="146dp"
         android:layout_height="51dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:text="New Board"
         app:layout_constraintBottom_toTopOf="@+id/imbNewGame"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pbTime"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="146dp"
         android:layout_height="51dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
         android:background="@android:drawable/btn_dropdown"
         app:layout_constraintBottom_toTopOf="@+id/imbNewGame"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pbTime"
-        app:layout_constraintVertical_bias="0.063" />
-
-    <ProgressBar
-        android:id="@+id/pb_circle"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/spinner"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/btResetBoard"
-        app:layout_constraintTop_toBottomOf="@+id/pbTime" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
         android:id="@+id/imbRedo"
@@ -128,4 +103,33 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/redo" />
+
+    <TextView
+        android:id="@+id/tv_time_player1"
+        android:layout_width="112dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="15:00"
+        android:textStyle="bold"
+        android:textColor="#400000"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pbTime" />
+
+    <TextView
+        android:textStyle="bold"
+        android:id="@+id/tv_time_player2"
+        android:layout_width="112dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="right"
+        android:text="15:00"
+        android:textColor="#400000"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pbTime" />
 </android.support.constraint.ConstraintLayout>

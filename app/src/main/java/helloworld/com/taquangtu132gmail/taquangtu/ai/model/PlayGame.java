@@ -2,6 +2,7 @@ package helloworld.com.taquangtu132gmail.taquangtu.ai.model;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,6 +24,8 @@ public class PlayGame
     private GridView gvBoard;
     private ArrayList<ArrayList<String>> chessColorMaxtrix;
     private ChessAdapter chessAdapter;
+    private CountDownTimer countLeft;
+    private CountDownTimer countRight;
 
     public PlayGame(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -50,6 +53,7 @@ public class PlayGame
             }
         });
         setOnHumanClick();
+        setCountdownTimer();
     }
 
     public void redo() {
@@ -107,16 +111,16 @@ public class PlayGame
          this.gvBoard.setAdapter(this.chessAdapter);
          this.chessAdapter.notifyDataSetChanged();
     }
-    boolean isLegal(boolean isComputer, int position)
+    public boolean isLegal(boolean isComputer, int position)
     {
         int x=position/column;
         int y=position%column;
         int dy[]={-1,0,1,1,1,0,-1,-1};
         int dx[]={-1,-1,-1,0,1,1,1,0};
         //if that position is not empty return false
-        if(chessColorArray.get(position).equals("E")==false) return false;
+        if(!chessColorArray.get(position).equals("E")) return false;
         //
-        if(isComputer==false)
+        if(isComputer==false) //human's turn
         {
             for(int i=0;i<8;i++)
             {
@@ -168,35 +172,35 @@ public class PlayGame
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (isLegal(false, i))
                 {
+                    countRight.start();
+                    countLeft.cancel();
+                    //Log.d("PlayGame.java", "onListViewItemClick, time of right = "+mainActivity.timeOfRightPlayer);
                     mainActivity.countDownTimer.cancel();
                     mainActivity.timeToThink = 15;
                     mainActivity.pbTime.setProgress(mainActivity.timeToThink);
                     //store current state for undo
-                    ArrayList<String> boardState = new ArrayList<>();
-                    for (int it = 0; it < row; it++) {
-                        for (int j = 0; j < column; j++) {
-                            boardState.add(chessColorArray.get(it * column + j));
-                        }
-                    }
-                    mainActivity.addState();
+                    mainActivity.addState(); //to undo + redo when necessary
                     put(false, i);
                     chessAdapter.notifyDataSetChanged();
                     //action if finish
-                    if(isFinish()!=2) //if not over
+                    if(isFinish()!=2)
                     {
                         actionForFinish();
                         return;
                     }
-                    //check if CPU has more one way to chose
                     else
-                    {
+                    { //check if CPU has more one way to chose
                         if(isMoveLefts(true)==false)
                         {
                             Toast.makeText(mainActivity, "CPU has no way to continue, your turn", Toast.LENGTH_SHORT).show();
                             mainActivity.countDownTimer.start();
+                            countLeft.start();
+                            countRight.cancel();
                         }
                         else
                         {
+                            countRight.start();
+                            countLeft.cancel();
                             //START: INSERT AI CODE HERE================================================
                             Minimax minimax = new Minimax(chessColorMaxtrix);
                             int position=minimax.findBestMove(mainActivity.level);
@@ -227,12 +231,14 @@ public class PlayGame
                                 }
                                 mainActivity.countDownTimer.start();
                             }
+                            countLeft.start();
+                            countRight.cancel();
                         }
                     }
                 }
                 else
                     {
-                        Toast.makeText(mainActivity,"Not a legal move, try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mainActivity,"Illegal move, try again", Toast.LENGTH_SHORT).show();
                     }
             }
         });
@@ -439,11 +445,73 @@ public class PlayGame
             });
             alert.show();
         }
+        countLeft.cancel();
+        countRight.cancel();
     }
     public void updateChessColorMatrix() {
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++)
                 chessColorMaxtrix.get(i).add(chessColorArray.get(i * column + j));
         }
+    }
+    public void setCountdownTimer()
+    {
+        final int INFINITY = 2100000000;
+        countLeft = new CountDownTimer(INFINITY, 1000) {
+            @Override
+            public void onTick(long l) {
+                mainActivity.tvTimeOfLeft.setText(convertTime(--mainActivity.timeOfLeftPlayer));
+                if(mainActivity.timeOfLeftPlayer<=0)
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                    alert.setTitle("YOU LOSE!!!");
+                    alert.setMessage("15 phút mà đánh cũng không xong!!!");
+                    alert.setCancelable(false);
+                    alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mainActivity.resetBoard(row,column);
+                        }
+                    });
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void onFinish() {
+               this.start();
+            }
+        };
+        countRight = new CountDownTimer(INFINITY, 1000) {
+            @Override
+            public void onTick(long l) {
+                mainActivity.tvTimeOfRight.setText(convertTime(--mainActivity.timeOfRightPlayer));
+               // Log.d("Playgame.java", "onTick: " + "maiActivity.timeOfRightPlayer = "+mainActivity.timeOfRightPlayer);
+                if(mainActivity.timeOfRightPlayer<=0)
+                {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+                    alert.setTitle("YOU WIN!!!");
+                    alert.setMessage("Đối thủ của bạn đã dùng hết 15 phút!!!");
+                    alert.setCancelable(false);
+                    alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mainActivity.resetBoard(row,column);
+                        }
+                    });
+                    alert.show();
+                }
+            }
+            @Override
+            public void onFinish() {
+                this.start();
+            }
+        };
+    }
+    String convertTime(int time) //convert from int to MM : SS
+    {
+        String m = Integer.toString(time/60);
+        String s = Integer.toString(time%60);
+        return m + " : " + s;
     }
 }

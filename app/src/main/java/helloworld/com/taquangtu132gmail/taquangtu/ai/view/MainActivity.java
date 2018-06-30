@@ -16,12 +16,13 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import helloworld.com.taquangtu132gmail.taquangtu.ai.model.PlayGame;
 import helloworld.com.taquangtu132gmail.taquangtu.ai.R;
+import helloworld.com.taquangtu132gmail.taquangtu.ai.model.PlayGame;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<ArrayList<String>> storgedState;
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
     private Button btResetBoard;
 
     public CountDownTimer countDownTimer;
+    public TextView tvTimeOfLeft;
+    public TextView tvTimeOfRight;
+    public int timeOfLeftPlayer = 900; //seconds
+    public int timeOfRightPlayer = 900; ////seconds
     public int timeToThink = 15;
     public ProgressBar pbTime;
     public ProgressBar progressBarCircel;
@@ -64,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         initAdapter();
         setOnClickForView();
         //ProgressBar is played in CPU calculating time only
-        progressBarCircel.setVisibility(View.INVISIBLE);
     }
     void initAdapter() //and ArrayList, setAdapter
     {
@@ -91,16 +95,17 @@ public class MainActivity extends AppCompatActivity {
     }
     public void mapView() //and init something
     {
-        imbRedo     = findViewById(R.id.imbRedo);
-        progressBarCircel = findViewById(R.id.pb_circle);
+        tvTimeOfLeft = findViewById(R.id.tv_time_player1);
+        tvTimeOfRight= findViewById(R.id.tv_time_player2);
+        imbRedo      = findViewById(R.id.imbRedo);
         imbUndo      = (ImageButton) findViewById(R.id.imbUndo);
-        spLevel     = (Spinner) findViewById(R.id.spinner);
-        pbTime      = (ProgressBar) findViewById(R.id.pbTime);
-        gvBoard     = (GridView) findViewById(R.id.gvBoard);
-        imbUndo     = (ImageButton) findViewById(R.id.imbUndo);
-        imbNewgame  = (ImageButton) findViewById(R.id.imbNewGame);
-        btResetBoard= (Button) findViewById(R.id.btResetBoard);
-        storgedState= new ArrayList<>();
+        spLevel      = (Spinner) findViewById(R.id.spinner);
+        pbTime       = (ProgressBar) findViewById(R.id.pbTime);
+        gvBoard      = (GridView) findViewById(R.id.gvBoard);
+        imbUndo      = (ImageButton) findViewById(R.id.imbUndo);
+        imbNewgame   = (ImageButton) findViewById(R.id.imbNewGame);
+        btResetBoard = (Button) findViewById(R.id.btResetBoard);
+        storgedState = new ArrayList<>();
         setCountDownTimer();
     }
     public void addState()
@@ -215,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
                 countDownTimer.cancel();
                 timeToThink=15;
                 pbTime.setProgress(timeToThink);
+                timeOfLeftPlayer = timeOfRightPlayer = 900; //15 minutes
             }
         });
         btResetBoard.setOnClickListener(new View.OnClickListener() {
@@ -280,6 +286,9 @@ public class MainActivity extends AppCompatActivity {
     public void resetBoard(int row, int column)
     {
         this.stateIndex = 0;
+        this.timeToThink = 15;
+        this.timeOfLeftPlayer = 900;
+        this.timeOfRightPlayer = 900;
         this.storgedState = new ArrayList<>();
         this.row=row;
         this.column=column;
@@ -318,6 +327,8 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long l) {
                 timeToThink--;
                 pbTime.setProgress(timeToThink);
+                //down left player time 1 second
+
             }
 
             @Override
@@ -333,8 +344,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 alert.show();
-                pbTime.setProgress(15);
-                timeToThink = 15;
             }
         };
     }
