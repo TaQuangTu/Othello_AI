@@ -175,9 +175,6 @@ public class PlayGame
                     countRight.start();
                     countLeft.cancel();
                     //Log.d("PlayGame.java", "onListViewItemClick, time of right = "+mainActivity.timeOfRightPlayer);
-                    mainActivity.countDownTimer.cancel();
-                    mainActivity.timeToThink = 15;
-                    mainActivity.pbTime.setProgress(mainActivity.timeToThink);
                     //store current state for undo
                     mainActivity.addState(); //to undo + redo when necessary
                     put(false, i);
@@ -193,7 +190,6 @@ public class PlayGame
                         if(isMoveLefts(true)==false)
                         {
                             Toast.makeText(mainActivity, "CPU has no way to continue, your turn", Toast.LENGTH_SHORT).show();
-                            mainActivity.countDownTimer.start();
                             countLeft.start();
                             countRight.cancel();
                         }
@@ -229,7 +225,6 @@ public class PlayGame
                                         return;
                                     }
                                 }
-                                mainActivity.countDownTimer.start();
                             }
                             countLeft.start();
                             countRight.cancel();
@@ -403,11 +398,18 @@ public class PlayGame
     void actionForFinish()
     {
         int res = isFinish();
+        int numOfWhite = 0;
+        int numOfBlack = 0;
+        for(int i=0;i<row*column;i++)
+        {
+            if(chessColorArray.get(i).equals("W")) numOfWhite++;
+            if (chessColorArray.get(i).equals("B")) numOfBlack++;
+        }
         if(res==-31000)
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("Congratulation!!!");
-            alert.setMessage("Winner winner chicken dinner");
+            alert.setMessage("Bạn đã thắng với tỷ số " + numOfBlack + " - "+numOfWhite);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -435,7 +437,7 @@ public class PlayGame
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("YOU LOSE!!!");
-            alert.setMessage("Miệt mài quay tay, vận may sẽ đến");
+            alert.setMessage("Bạn đã thua với tỷ số " + numOfBlack + " - "+numOfWhite);
             alert.setCancelable(false);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
                 @Override

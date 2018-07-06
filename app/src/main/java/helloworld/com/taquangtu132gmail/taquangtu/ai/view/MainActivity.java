@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     public TextView tvTimeOfRight;
     public int timeOfLeftPlayer = 900; //seconds
     public int timeOfRightPlayer = 900; ////seconds
-    public int timeToThink = 15;
     public ProgressBar pbTime;
     public ProgressBar progressBarCircel;
     public int getRow() {
@@ -106,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         imbNewgame   = (ImageButton) findViewById(R.id.imbNewGame);
         btResetBoard = (Button) findViewById(R.id.btResetBoard);
         storgedState = new ArrayList<>();
-        setCountDownTimer();
     }
     public void addState()
     {
@@ -148,12 +146,9 @@ public class MainActivity extends AppCompatActivity {
                          {
                              level = 1;
                          }
-                     countDownTimer.cancel();
-                     pbTime.setProgress(15);
-                     timeToThink = 15;
                  }
                  else
-                 if(i==1)//checken
+                 if(i==1)//chicken
                  {
                      if(row*column<=100)
                      {
@@ -163,9 +158,6 @@ public class MainActivity extends AppCompatActivity {
                      {
                          level = 2;
                      }
-                     countDownTimer.cancel();
-                     pbTime.setProgress(15);
-                     timeToThink = 15;
                  }
                  else
                  if(i==2)//professional
@@ -178,9 +170,6 @@ public class MainActivity extends AppCompatActivity {
                      {
                          level = 3;
                      }
-                     countDownTimer.cancel();
-                     pbTime.setProgress(15);
-                     timeToThink = 15;
                  }
                  if(i==3)//master
                  {
@@ -196,9 +185,6 @@ public class MainActivity extends AppCompatActivity {
                          {
                              level = 4;
                          }
-                     countDownTimer.cancel();
-                     pbTime.setProgress(15);
-                     timeToThink = 15;
                  }
                  MainActivity.this.resetBoard(row,column);
             }
@@ -217,18 +203,13 @@ public class MainActivity extends AppCompatActivity {
                 initAdapter();
                 storgedState.clear();
                 stateIndex=0;
-                countDownTimer.cancel();
-                timeToThink=15;
-                pbTime.setProgress(timeToThink);
                 timeOfLeftPlayer = timeOfRightPlayer = 900; //15 minutes
             }
         });
         btResetBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                countDownTimer.cancel();
-                timeToThink=15;
-                pbTime.setProgress(timeToThink);
+                //countDownTimer.cancel();
                 final Dialog dialog = new Dialog(MainActivity.this);
                 dialog.setTitle("NEW BOARD");
                 dialog.setContentView(R.layout.activity_dialog);
@@ -286,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
     public void resetBoard(int row, int column)
     {
         this.stateIndex = 0;
-        this.timeToThink = 15;
         this.timeOfLeftPlayer = 900;
         this.timeOfRightPlayer = 900;
         this.storgedState = new ArrayList<>();
@@ -320,31 +300,5 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<ArrayList<String>> getStorgedState() {
         return storgedState;
-    }
-    public void setCountDownTimer(){
-        countDownTimer = new CountDownTimer(15000,1000) {
-            @Override
-            public void onTick(long l) {
-                timeToThink--;
-                pbTime.setProgress(timeToThink);
-                //down left player time 1 second
-
-            }
-
-            @Override
-            public void onFinish() {
-                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-                alert.setTitle("YOU LOSE!!!");
-                alert.setMessage("Bạn thua do suy nghĩ quá lâu");
-                alert.setCancelable(false);
-                alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        resetBoard(row,column);
-                    }
-                });
-                alert.show();
-            }
-        };
     }
 }
