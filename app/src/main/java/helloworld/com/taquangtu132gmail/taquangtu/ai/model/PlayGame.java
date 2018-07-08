@@ -6,10 +6,12 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import helloworld.com.taquangtu132gmail.taquangtu.ai.aiCalculator.LookupTable;
 import helloworld.com.taquangtu132gmail.taquangtu.ai.aiCalculator.Minimax;
@@ -26,14 +28,16 @@ public class PlayGame
     private ChessAdapter chessAdapter;
     private CountDownTimer countLeft;
     private CountDownTimer countRight;
+    private Button btnRandom;
 
-    public PlayGame(MainActivity mainActivity) {
+    public PlayGame(final MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.column = mainActivity.getColumn();
         this.row = mainActivity.getRow();
         this.chessColorArray = mainActivity.chessColorArray;
         this.gvBoard = mainActivity.getGvBoard();
         this.chessAdapter = mainActivity.getChessAdapter();
+        this.btnRandom = mainActivity.getBtnRandom();
         this.chessColorMaxtrix = new ArrayList<>(row);
         LookupTable.generateScoreBoard(row, column);
         for (int i = 0; i < row; i++) {
@@ -50,6 +54,19 @@ public class PlayGame
             @Override
             public void onClick(View view) {
                 redo();
+            }
+        });
+        btnRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(PlayGame.this.mainActivity,"Wait a minute", Toast.LENGTH_LONG);
+                playRandom(row*column); //play to full board
+            }
+        });
+        PlayGame.this.mainActivity.getBtnChallenge().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playRandom(row*column/4);
             }
         });
         setOnHumanClick();
@@ -172,7 +189,7 @@ public class PlayGame
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (isLegal(false, i))
                 {
-                    countRight.start();
+                 //   countRight.start();
                     countLeft.cancel();
                     //Log.d("PlayGame.java", "onListViewItemClick, time of right = "+mainActivity.timeOfRightPlayer);
                     //store current state for undo
@@ -191,11 +208,11 @@ public class PlayGame
                         {
                             Toast.makeText(mainActivity, "CPU has no way to continue, your turn", Toast.LENGTH_SHORT).show();
                             countLeft.start();
-                            countRight.cancel();
+                            //countRight.cancel();
                         }
                         else
                         {
-                            countRight.start();
+                          //  countRight.start();
                             countLeft.cancel();
                             //START: INSERT AI CODE HERE================================================
                             Minimax minimax = new Minimax(chessColorMaxtrix);
@@ -227,7 +244,7 @@ public class PlayGame
                                 }
                             }
                             countLeft.start();
-                            countRight.cancel();
+                           // countRight.cancel();
                         }
                     }
                 }
@@ -409,7 +426,7 @@ public class PlayGame
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("Congratulation!!!");
-            alert.setMessage("Bạn đã thắng với tỷ số " + numOfBlack + " - "+numOfWhite);
+            alert.setMessage("You win with score " + numOfBlack + " - "+numOfWhite);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -437,7 +454,7 @@ public class PlayGame
         {
             AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
             alert.setTitle("YOU LOSE!!!");
-            alert.setMessage("Bạn đã thua với tỷ số " + numOfBlack + " - "+numOfWhite);
+            alert.setMessage("You lose with score " + numOfBlack + " - "+numOfWhite);
             alert.setCancelable(false);
             alert.setPositiveButton("OK, Continue", new DialogInterface.OnClickListener() {
                 @Override
@@ -448,7 +465,7 @@ public class PlayGame
             alert.show();
         }
         countLeft.cancel();
-        countRight.cancel();
+       // countRight.cancel();
     }
     public void updateChessColorMatrix() {
         for (int i = 0; i < row; i++) {
@@ -476,6 +493,7 @@ public class PlayGame
                         }
                     });
                     alert.show();
+                    mainActivity.timeOfLeftPlayer = 900;
                 }
             }
 
@@ -484,7 +502,7 @@ public class PlayGame
                this.start();
             }
         };
-        countRight = new CountDownTimer(INFINITY, 1000) {
+        /*countRight = new CountDownTimer(INFINITY, 1000) {
             @Override
             public void onTick(long l) {
                 mainActivity.tvTimeOfRight.setText(convertTime(--mainActivity.timeOfRightPlayer));
@@ -502,18 +520,79 @@ public class PlayGame
                         }
                     });
                     alert.show();
+                    mainActivity.timeOfRightPlayer = 900;
                 }
             }
             @Override
             public void onFinish() {
                 this.start();
             }
-        };
+        };*/
     }
     String convertTime(int time) //convert from int to MM : SS
     {
         String m = Integer.toString(time/60);
         String s = Integer.toString(time%60);
         return m + " : " + s;
+    }
+    public void playRandom(int numberOfStep)
+    {
+        int index = 0;
+        Random random = new Random();
+        int i=0;
+        while(isFinish()==2&&i<numberOfStep)//not over
+        {
+            i++;
+            do
+                {
+                    index = random.nextInt(row*column);
+                    Log.d("PlayGame.java", "playRandom: index = " + index);
+                }
+                while(!isLegal(false,index));
+            put(false,index);
+            chessAdapter.notifyDataSetChanged();
+            //action if finish
+            if(isFinish()!=2)
+            {
+                actionForFinish();
+                return;
+            }
+            else
+            { //check if CPU has more one way to chose
+                if(isMoveLefts(true))
+                {
+                    //countRight.start();
+                    countLeft.cancel();
+                    //START: INSERT AI CODE HERE================================================
+                    Minimax minimax = new Minimax(chessColorMaxtrix);
+                    int position=minimax.findBestMove(mainActivity.level);
+                    //END: INSERT AI CODE HERE==================================================
+                    put(true, position);
+                    chessAdapter.notifyDataSetChanged();
+                    if(isFinish()!=2)
+                    {
+                        actionForFinish();
+                        return;
+                    }
+                    else
+                    {
+                        while(isMoveLefts(false)==false)
+                        {
+                            //START: INSERT AI CODE HERE==================================================
+                            minimax = new Minimax(chessColorMaxtrix);
+                            position=minimax.findBestMove(mainActivity.level);
+                            //END: INSERT AI CODE HERE==================================================
+                            put(true, position);
+                            chessAdapter.notifyDataSetChanged();
+                            if(isFinish()!=2)
+                            {
+                                actionForFinish();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

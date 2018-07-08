@@ -28,31 +28,28 @@
 
     <ImageButton
         android:id="@+id/imbUndo"
-        android:layout_width="76dp"
+        android:layout_width="70dp"
         android:layout_height="52dp"
         android:layout_marginBottom="36dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@null"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/button_frame"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/undo" />
 
     <ImageButton
         android:id="@+id/imbNewGame"
-        android:layout_width="0dp"
+        android:layout_width="70dp"
         android:layout_height="52dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@null"
+        android:layout_marginBottom="36dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/button_frame"
         android:scaleType="fitXY"
+        android:src="@drawable/restart"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imbRedo"
-        app:layout_constraintStart_toEndOf="@+id/imbUndo"
-        app:srcCompat="@drawable/newgame" />
+        app:layout_constraintStart_toEndOf="@+id/imbUndo" />
 
     <ProgressBar
         android:id="@+id/pbTime"
@@ -94,12 +91,12 @@
 
     <ImageButton
         android:id="@+id/imbRedo"
-        android:layout_width="76dp"
+        android:layout_width="70dp"
         android:layout_height="52dp"
         android:layout_marginBottom="36dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:background="@null"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/button_frame"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/redo" />
@@ -132,4 +129,35 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pbTime" />
+
+    <Button
+        android:id="@+id/btn_random"
+        android:layout_width="70dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="36dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/button_frame"
+        android:text="R"
+        android:textColor="#000000"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imbRedo" />
+
+    <Button
+        android:id="@+id/btn_challenge"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="36dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/button_frame"
+        android:text="Challenge"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_random"
+        app:layout_constraintStart_toEndOf="@+id/imbNewGame" />
 </android.support.constraint.ConstraintLayout>

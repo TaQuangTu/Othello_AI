@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -31,15 +30,13 @@ public class MainActivity extends AppCompatActivity {
     private GridView gvBoard;
     private ImageButton imbUndo,imbRedo, imbNewgame;
     private ChessAdapter chessAdapter;
-    private Button btResetBoard;
+    private Button btnResetBoard, btnRandom, btnChallenge;
 
-    public CountDownTimer countDownTimer;
     public TextView tvTimeOfLeft;
     public TextView tvTimeOfRight;
     public int timeOfLeftPlayer = 900; //seconds
     public int timeOfRightPlayer = 900; ////seconds
     public ProgressBar pbTime;
-    public ProgressBar progressBarCircel;
     public int getRow() {
         return row;
     }
@@ -94,16 +91,18 @@ public class MainActivity extends AppCompatActivity {
     }
     public void mapView() //and init something
     {
+        btnChallenge = findViewById(R.id.btn_challenge);
+        btnRandom    = findViewById(R.id.btn_random);
         tvTimeOfLeft = findViewById(R.id.tv_time_player1);
         tvTimeOfRight= findViewById(R.id.tv_time_player2);
         imbRedo      = findViewById(R.id.imbRedo);
-        imbUndo      = (ImageButton) findViewById(R.id.imbUndo);
-        spLevel      = (Spinner) findViewById(R.id.spinner);
-        pbTime       = (ProgressBar) findViewById(R.id.pbTime);
-        gvBoard      = (GridView) findViewById(R.id.gvBoard);
-        imbUndo      = (ImageButton) findViewById(R.id.imbUndo);
-        imbNewgame   = (ImageButton) findViewById(R.id.imbNewGame);
-        btResetBoard = (Button) findViewById(R.id.btResetBoard);
+        imbUndo      = findViewById(R.id.imbUndo);
+        spLevel      = findViewById(R.id.spinner);
+        pbTime       = findViewById(R.id.pbTime);
+        gvBoard      = findViewById(R.id.gvBoard);
+        imbUndo      = findViewById(R.id.imbUndo);
+        imbNewgame   = findViewById(R.id.imbNewGame);
+        btnResetBoard = (Button) findViewById(R.id.btResetBoard);
         storgedState = new ArrayList<>();
     }
     public void addState()
@@ -146,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
                          {
                              level = 1;
                          }
+                     //enable touching on btnRandom
+                     btnRandom.setVisibility(View.VISIBLE);
+                     btnChallenge.setVisibility(View.VISIBLE);
                  }
                  else
                  if(i==1)//chicken
@@ -158,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
                      {
                          level = 2;
                      }
+                     //enable touching on btnRandom and btnChallenge
+                     btnRandom.setVisibility(View.VISIBLE);
+                     btnChallenge.setVisibility(View.VISIBLE);
                  }
                  else
                  if(i==2)//professional
@@ -170,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
                      {
                          level = 3;
                      }
+                     //disable touching on btnRandom
+                     btnRandom.setVisibility(View.INVISIBLE);
+                     btnChallenge.setVisibility(View.INVISIBLE);
                  }
                  if(i==3)//master
                  {
@@ -185,7 +193,11 @@ public class MainActivity extends AppCompatActivity {
                          {
                              level = 4;
                          }
+                     //disable touching on btnRandom
+                     btnRandom.setVisibility(View.INVISIBLE);
+                     btnChallenge.setVisibility(View.INVISIBLE);
                  }
+
                  MainActivity.this.resetBoard(row,column);
             }
 
@@ -206,10 +218,9 @@ public class MainActivity extends AppCompatActivity {
                 timeOfLeftPlayer = timeOfRightPlayer = 900; //15 minutes
             }
         });
-        btResetBoard.setOnClickListener(new View.OnClickListener() {
+        btnResetBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //countDownTimer.cancel();
                 final Dialog dialog = new Dialog(MainActivity.this);
                 dialog.setTitle("NEW BOARD");
                 dialog.setContentView(R.layout.activity_dialog);
@@ -300,5 +311,13 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<ArrayList<String>> getStorgedState() {
         return storgedState;
+    }
+    public Button getBtnRandom()
+    {
+        return this.btnRandom;
+    }
+    public Button getBtnChallenge()
+    {
+        return this.btnChallenge;
     }
 }
