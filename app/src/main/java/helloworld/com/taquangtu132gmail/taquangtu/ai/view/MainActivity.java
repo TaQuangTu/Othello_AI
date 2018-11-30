@@ -13,9 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -32,11 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private ChessAdapter chessAdapter;
     private Button btnResetBoard, btnRandom, btnChallenge;
 
-    public TextView tvTimeOfLeft;
-    public TextView tvTimeOfRight;
-    public int timeOfLeftPlayer = 900; //seconds
-    public int timeOfRightPlayer = 900; ////seconds
-    public ProgressBar pbTime;
     public int getRow() {
         return row;
     }
@@ -93,16 +86,13 @@ public class MainActivity extends AppCompatActivity {
     {
         btnChallenge = findViewById(R.id.btn_challenge);
         btnRandom    = findViewById(R.id.btn_random);
-        tvTimeOfLeft = findViewById(R.id.tv_time_player1);
-        tvTimeOfRight= findViewById(R.id.tv_time_player2);
         imbRedo      = findViewById(R.id.imbRedo);
         imbUndo      = findViewById(R.id.imbUndo);
         spLevel      = findViewById(R.id.spinner);
-        pbTime       = findViewById(R.id.pbTime);
         gvBoard      = findViewById(R.id.gvBoard);
         imbUndo      = findViewById(R.id.imbUndo);
         imbNewgame   = findViewById(R.id.imbNewGame);
-        btnResetBoard = (Button) findViewById(R.id.btResetBoard);
+        btnResetBoard = findViewById(R.id.btResetBoard);
         storgedState = new ArrayList<>();
     }
     public void addState()
@@ -176,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
                          level = 3;
                      }
                      //disable touching on btnRandom
-                     btnRandom.setVisibility(View.INVISIBLE);
-                     btnChallenge.setVisibility(View.INVISIBLE);
+                     btnRandom.setVisibility(View.GONE);
+                     btnChallenge.setVisibility(View.GONE);
                  }
                  if(i==3)//master
                  {
@@ -194,8 +184,8 @@ public class MainActivity extends AppCompatActivity {
                              level = 4;
                          }
                      //disable touching on btnRandom
-                     btnRandom.setVisibility(View.INVISIBLE);
-                     btnChallenge.setVisibility(View.INVISIBLE);
+                     btnRandom.setVisibility(View.GONE);
+                     btnChallenge.setVisibility(View.GONE);
                  }
 
                  MainActivity.this.resetBoard(row,column);
@@ -215,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 initAdapter();
                 storgedState.clear();
                 stateIndex=0;
-                timeOfLeftPlayer = timeOfRightPlayer = 900; //15 minutes
             }
         });
         btnResetBoard.setOnClickListener(new View.OnClickListener() {
@@ -278,8 +267,6 @@ public class MainActivity extends AppCompatActivity {
     public void resetBoard(int row, int column)
     {
         this.stateIndex = 0;
-        this.timeOfLeftPlayer = 900;
-        this.timeOfRightPlayer = 900;
         this.storgedState = new ArrayList<>();
         this.row=row;
         this.column=column;
