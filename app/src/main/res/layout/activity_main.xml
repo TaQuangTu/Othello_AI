@@ -3,73 +3,94 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/table"
     android:layout_height="match_parent"
+    android:background="@drawable/table"
     android:padding="5dp"
     tools:context=".view.MainActivity">
+
     <GridView
-        android:horizontalSpacing="1.5dp"
-        android:verticalSpacing="1.5dp"
-        android:padding="5dp"
-        android:background="#000000"
         android:id="@+id/gvBoard"
-        android:numColumns="8"
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_marginEnd="8dp"
+        android:layout_margin="5dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:background="#000000"
+        android:horizontalSpacing="1.5dp"
+        android:numColumns="8"
+        android:padding="5dp"
+        android:verticalSpacing="1.5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/imbUndo"
-        android:layout_width="70dp"
+        android:layout_width="0dp"
         android:layout_height="52dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/button_frame"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/imbNewGame"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/undo" />
 
     <ImageButton
         android:id="@+id/imbNewGame"
-        android:layout_width="70dp"
+        android:layout_width="0dp"
         android:layout_height="52dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/button_frame"
-        android:scaleType="fitXY"
         android:src="@drawable/restart"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_challenge"
         app:layout_constraintStart_toEndOf="@+id/imbUndo" />
 
-    <ProgressBar
-        android:id="@+id/pbTime"
-        style="?android:attr/progressBarStyleHorizontal"
+    <Button
+        android:padding="2dp"
+        android:id="@+id/btn_challenge"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="5dp"
         android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:max="15"
-        android:progress="15"
-        android:progressBackgroundTint="@color/colorAccent"
-        app:layout_constraintBottom_toTopOf="@+id/imbNewGame"
+        android:background="@drawable/button_frame"
+        android:text="Challenge"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_random"
+        app:layout_constraintStart_toEndOf="@+id/imbNewGame" />
+
+    <Button
+        android:id="@+id/btn_random"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_frame"
+        android:text="R"
+        android:textColor="#000000"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/imbRedo"
+        app:layout_constraintStart_toEndOf="@+id/btn_challenge" />
+
+    <ImageButton
+        android:id="@+id/imbRedo"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/button_frame"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gvBoard" />
+        app:layout_constraintStart_toEndOf="@+id/btn_random"
+        app:srcCompat="@drawable/redo" />
+
 
     <Button
         android:id="@+id/btResetBoard"
@@ -77,6 +98,7 @@
         android:layout_height="51dp"
         android:layout_marginBottom="8dp"
         android:text="New Board"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@+id/imbNewGame"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -88,76 +110,4 @@
         android:background="@android:drawable/btn_dropdown"
         app:layout_constraintBottom_toTopOf="@+id/imbNewGame"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <ImageButton
-        android:id="@+id/imbRedo"
-        android:layout_width="70dp"
-        android:layout_height="52dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:background="@drawable/button_frame"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/redo" />
-
-    <TextView
-        android:id="@+id/tv_time_player1"
-        android:layout_width="112dp"
-        android:layout_height="32dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="15:00"
-        android:textStyle="bold"
-        android:textColor="#400000"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pbTime" />
-
-    <TextView
-        android:textStyle="bold"
-        android:id="@+id/tv_time_player2"
-        android:layout_width="112dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="right"
-        android:text="15:00"
-        android:textColor="#400000"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pbTime" />
-
-    <Button
-        android:id="@+id/btn_random"
-        android:layout_width="70dp"
-        android:layout_height="52dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:background="@drawable/button_frame"
-        android:text="R"
-        android:textColor="#000000"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imbRedo" />
-
-    <Button
-        android:id="@+id/btn_challenge"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:layout_marginBottom="36dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/button_frame"
-        android:text="Challenge"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_random"
-        app:layout_constraintStart_toEndOf="@+id/imbNewGame" />
 </android.support.constraint.ConstraintLayout>
