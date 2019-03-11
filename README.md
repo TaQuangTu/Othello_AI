@@ -1,5 +1,6 @@
 # Othello_AI
 This is a game which using AI algorithm-Minimax algorithm and Alpha- beta pruning. 
-It can win when play with Random Player. 
-In this game has 4 level and many challenges for players.
-Improve this game if you can. 
+Features:
+- It can win if it plays with a player who just plays randomly 
+- 4 levels and many challenges for players.
+
