@@ -4,5 +4,7 @@ Features:
 - Challenge generation: Generate changlenges that are hard for solving
 - 4 difficult levels for all players.
 - Wide range of table size (from 4x4 to 16x16).
+
 ![Game image](https://drive.google.com/file/d/1hG7yLDFQ-V9sBQyrrvmpwlPf-nSPBcv4/view?usp=sharing)
+If you can not view the image, visit my Google Drive https://drive.google.com/file/d/1hG7yLDFQ-V9sBQyrrvmpwlPf-nSPBcv4/view?usp=sharing
 
