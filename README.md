@@ -1,6 +1,8 @@
 # Othello_AI
 This is Othello game using Minimax algorithm and Alpha- beta pruning algorithm (re-implemented by me). 
 Features:
-- It can win when play with a player who just plays randomly 
-- 4 levels and many challenges for players.
+- Challenge generation: Generate changlenges that are hard for solving
+- 4 difficult levels for all players.
+- Wide range of table size (from 4x4 to 16x16).
+![Game image](https://imgur.com/a/oLT3ADK)
 
